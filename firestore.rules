@@ -1,0 +1,47 @@
+rules_version = '2';
+
+// Reglas de seguridad de Mi Trayectoria.
+// Se pegan en la consola de Firebase: Firestore Database → Reglas → Publicar.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // La administradora es quien tiene un documento con su UID en la colección "admins".
+    // Ese documento se crea a mano desde la consola de Firebase.
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function validProfile(d) {
+      return d.keys().hasOnly(['name', 'locality', 'years', 'bio', 'tasks', 'mode', 'photo', 'updatedAt'])
+        && d.keys().hasAll(['name', 'locality', 'years', 'bio', 'tasks', 'mode', 'photo', 'updatedAt'])
+        && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
+        && d.locality is string && d.locality.size() >= 1 && d.locality.size() <= 60
+        && d.years in ['lt1', '1-3', '4-10', '10+']
+        && d.bio is string && d.bio.size() <= 400
+        && d.tasks is list && d.tasks.size() >= 1 && d.tasks.size() <= 6
+        && d.tasks.toSet().hasOnly(['Limpieza y organización', 'Cocina', 'Planchado', 'Cuidado de niños', 'Cuidado de personas mayores', 'Otras tareas'])
+        && d.mode in ['', 'horas', 'medio', 'completa', 'cualquiera']
+        && d.photo is string && d.photo.size() < 150000
+        && (d.photo == '' || d.photo.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))
+        && d.updatedAt == request.time;
+    }
+
+    // Perfiles: cualquiera los puede ver; cada persona solo crea, edita o borra el suyo.
+    // La administradora puede borrar cualquiera.
+    match /profiles/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && request.auth.uid == uid && validProfile(request.resource.data);
+      allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
+    }
+
+    // Cada persona solo puede consultar si ella misma es administradora. Nadie puede escribir desde la página.
+    match /admins/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}
