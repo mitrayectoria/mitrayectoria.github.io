@@ -24,7 +24,7 @@ service cloud.firestore {
         && d.bio is string && d.bio.size() <= 400
         && d.tasks is list && d.tasks.size() >= 1 && d.tasks.size() <= 6
         && d.tasks.toSet().hasOnly(['Limpieza y organización', 'Cocina', 'Planchado', 'Cuidado de niños', 'Cuidado de personas mayores', 'Otras tareas'])
-        && d.mode in ['', 'horas', 'medio', 'completa', 'cualquiera']
+        && d.mode in ['', 'con-retiro', 'sin-retiro', 'horas']
         && d.photo is string && d.photo.size() < 150000
         && (d.photo == '' || d.photo.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))
         && d.updatedAt == request.time;
