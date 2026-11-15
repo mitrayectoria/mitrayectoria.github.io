@@ -9,10 +9,41 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function me() {
+      return request.auth.uid;
+    }
+
     // La administradora es quien tiene un documento con su UID en la colección "admins".
     // Ese documento se crea a mano desde la consola de Firebase.
     function isAdmin() {
-      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(me()));
+    }
+
+    function employerPath(uid) {
+      return /databases/$(database)/documents/employers/$(uid);
+    }
+
+    function profilePath(uid) {
+      return /databases/$(database)/documents/profiles/$(uid);
+    }
+
+    function requestPath(employerId, workerId) {
+      return /databases/$(database)/documents/requests/$(employerId + '_' + workerId);
+    }
+
+    function isApprovedEmployer() {
+      return signedIn() && exists(employerPath(me())) && get(employerPath(me())).data.status == 'approved';
+    }
+
+    // ¿La trabajadora aceptó el pedido de entrevista de este empleador?
+    function accepted(employerId, workerId) {
+      return exists(requestPath(employerId, workerId))
+        && get(requestPath(employerId, workerId)).data.status == 'accepted';
+    }
+
+    // WhatsApp argentino: 10 números (código de área + número, sin 0 ni 15).
+    function validPhone(p) {
+      return p is string && p.matches('^[0-9]{10}$');
     }
 
     function validProfile(d) {
@@ -30,17 +61,97 @@ service cloud.firestore {
         && d.updatedAt == request.time;
     }
 
-    // Perfiles: cualquiera los puede ver; cada persona solo crea, edita o borra el suyo.
-    // La administradora puede borrar cualquiera.
+    function validEmployer(d) {
+      return d.keys().hasOnly(['name', 'locality', 'whatsapp', 'status', 'createdAt'])
+        && d.keys().hasAll(['name', 'locality', 'whatsapp', 'status', 'createdAt'])
+        && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
+        && d.locality is string && d.locality.size() >= 1 && d.locality.size() <= 60
+        && validPhone(d.whatsapp)
+        && d.status in ['pending', 'approved', 'rejected']
+        && d.createdAt is timestamp;
+    }
+
+    // ---------- Perfiles de quienes buscan trabajo ----------
+    // Los ven: la propia persona, la administradora y los empleadores aprobados.
     match /profiles/{uid} {
-      allow read: if true;
-      allow create, update: if signedIn() && request.auth.uid == uid && validProfile(request.resource.data);
-      allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow read: if signedIn() && (me() == uid || isAdmin() || isApprovedEmployer());
+      allow create: if signedIn() && me() == uid
+        && !exists(employerPath(uid))
+        && validProfile(request.resource.data);
+      allow update: if signedIn() && me() == uid && validProfile(request.resource.data);
+      allow delete: if signedIn() && (me() == uid || isAdmin());
+
+      // WhatsApp privado: lo ve la persona, la administradora,
+      // y el empleador cuyo pedido de entrevista fue aceptado.
+      match /private/{docId} {
+        allow read: if signedIn() && (me() == uid || isAdmin() || accepted(me(), uid));
+        allow create, update: if signedIn() && me() == uid
+          && docId == 'contact'
+          && request.resource.data.keys().hasOnly(['whatsapp'])
+          && validPhone(request.resource.data.whatsapp);
+        allow delete: if signedIn() && (me() == uid || isAdmin());
+      }
+    }
+
+    // ---------- Empleadores ----------
+    // Se registran solos, quedan "en revisión" y solo la administradora los aprueba.
+    match /employers/{uid} {
+      allow read: if signedIn() && (me() == uid || isAdmin() || accepted(uid, me()));
+      allow create: if signedIn() && me() == uid
+        && !exists(profilePath(uid))
+        && validEmployer(request.resource.data)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      // El empleador puede corregir sus datos mientras está en revisión.
+      // La administradora solo cambia el estado.
+      allow update: if signedIn() && (
+        (me() == uid
+          && resource.data.status == 'pending'
+          && validEmployer(request.resource.data)
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.createdAt == resource.data.createdAt)
+        || (isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['pending', 'approved', 'rejected'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ---------- Pedidos de entrevista ----------
+    // El ID es "<empleador>_<trabajadora>": un solo pedido por pareja.
+    match /requests/{rid} {
+      allow read: if signedIn() && (resource.data.employerId == me() || resource.data.workerId == me() || isAdmin());
+
+      allow create: if isApprovedEmployer()
+        && rid == me() + '_' + request.resource.data.workerId
+        && request.resource.data.keys().hasOnly(['employerId', 'workerId', 'employerName', 'employerLocality', 'workerName', 'message', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['employerId', 'workerId', 'employerName', 'employerLocality', 'workerName', 'message', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.employerId == me()
+        && request.resource.data.workerId is string
+        && exists(profilePath(request.resource.data.workerId))
+        && request.resource.data.employerName == get(employerPath(me())).data.name
+        && request.resource.data.employerLocality == get(employerPath(me())).data.locality
+        && request.resource.data.workerName is string && request.resource.data.workerName.size() <= 60
+        && request.resource.data.message is string && request.resource.data.message.size() <= 300
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Solo la trabajadora responde, una sola vez: acepta o no acepta.
+      allow update: if signedIn()
+        && resource.data.workerId == me()
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status in ['accepted', 'rejected']
+        && request.resource.data.updatedAt == request.time;
+
+      // El empleador puede cancelar un pedido que todavía no fue respondido.
+      allow delete: if signedIn() && (isAdmin() || (resource.data.employerId == me() && resource.data.status == 'pending'));
     }
 
     // Cada persona solo puede consultar si ella misma es administradora. Nadie puede escribir desde la página.
     match /admins/{uid} {
-      allow read: if signedIn() && request.auth.uid == uid;
+      allow read: if signedIn() && me() == uid;
       allow write: if false;
     }
   }
