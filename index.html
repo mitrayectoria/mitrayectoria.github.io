@@ -205,11 +205,11 @@ footer p{margin:0 0 8px}
           <label for="f-mode">Modalidad que buscás</label>
           <select id="f-mode">
             <option value="">Elegí una opción</option>
+            <option value="con-retiro">Con retiro</option>
+            <option value="sin-retiro">Sin retiro</option>
             <option value="horas">Por horas</option>
-            <option value="medio">Medio día</option>
-            <option value="completa">Jornada completa</option>
-            <option value="cualquiera">Cualquier modalidad</option>
           </select>
+          <span class="hint">Con retiro: volvés a tu casa al terminar el día. Sin retiro: vivís en la casa donde trabajás.</span>
         </div>
 
         <div class="check">
@@ -280,7 +280,7 @@ footer p{margin:0 0 8px}
 
   var TASKS = ["Limpieza y organización", "Cocina", "Planchado", "Cuidado de niños", "Cuidado de personas mayores", "Otras tareas"];
   var YEARS = { "lt1": "Menos de 1 año", "1-3": "Entre 1 y 3 años", "4-10": "Entre 4 y 10 años", "10+": "Más de 10 años" };
-  var MODES = { "horas": "Por horas", "medio": "Medio día", "completa": "Jornada completa", "cualquiera": "Cualquier modalidad" };
+  var MODES = { "con-retiro": "Con retiro", "sin-retiro": "Sin retiro", "horas": "Por horas" };
 
   var $ = function (id) { return document.getElementById(id); };
   var FB = null; /* funciones de Firebase, se cargan en start() */

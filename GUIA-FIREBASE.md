@@ -65,11 +65,13 @@ Las reglas hacen esto:
 
 ## 6. Publicar la página en internet (GitHub Pages)
 
+> Ya está hecho: la página está publicada en **https://mitrayectoria.github.io/** desde el repositorio `mitrayectoria/mitrayectoria.github.io`. Estos pasos quedan como referencia.
+
 1. En GitHub, entrá al repositorio → **Settings** → **Pages**.
 2. En **Source** elegí **Deploy from a branch**.
 3. Branch: **main**, carpeta **/ (root)** → **Save**.
 4. En uno o dos minutos aparece la dirección, algo como:
-   `https://nicolasguelfo-bot.github.io/mi-trayectoria/`
+   `https://mitrayectoria.github.io/` (porque el repositorio se llama `mitrayectoria.github.io`)
 
 > En la cuenta gratuita de GitHub, Pages solo funciona si el repositorio es **público**. Si es privado, hay que hacerlo público o usar otro hosting, como Netlify.
 
@@ -78,7 +80,7 @@ Las reglas hacen esto:
 Sin este paso, el botón "Entrar con Google" da error.
 
 1. Firebase → **Authentication** → **Settings** (Configuración) → **Dominios autorizados**.
-2. **Agregar dominio** → escribí solo `nicolasguelfo-bot.github.io` (sin `https://` ni barras).
+2. **Agregar dominio** → escribí solo `mitrayectoria.github.io` (sin `https://` ni barras).
 
 ## 8. Hacerte administradora
 
