@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mi Trayectoria – Publicá tu perfil</title>
+<title>Mi Trayectoria</title>
+<meta name="description" content="Perfiles de personas que trabajan en casas de familia, y familias que buscan a alguien de confianza.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
 <style>
@@ -16,6 +17,7 @@
   --chip:#E6EEEC; --input:#FFFFFF; --accent:#F2A93B; --on-accent:#12343B; --focus:#12343B;
   --hero-bg:#12343B; --hero-ink:#F4F7F6; --hero-muted:#D5E3E0;
   --chip-on-bg:#12343B; --chip-on-ink:#F4F7F6; --danger:#9B2C2C; --ok:#0B5A3E; --ok-bg:#D5EFE3;
+  --warn:#7A4A06; --warn-bg:#FCEBD0;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -24,6 +26,7 @@
     --chip:#20434B; --input:#0F2529; --focus:#F2A93B;
     --hero-bg:#0A181B; --hero-ink:#F4F7F6; --hero-muted:#C5D8D4;
     --chip-on-bg:#F2A93B; --chip-on-ink:#12343B; --danger:#F2A0A0; --ok:#8EE0BC; --ok-bg:#1B4A3B;
+    --warn:#F6CD8C; --warn-bg:#4A3714;
   }
 }
 :root[data-theme="dark"]{
@@ -32,6 +35,7 @@
   --chip:#20434B; --input:#0F2529; --focus:#F2A93B;
   --hero-bg:#0A181B; --hero-ink:#F4F7F6; --hero-muted:#C5D8D4;
   --chip-on-bg:#F2A93B; --chip-on-ink:#12343B; --danger:#F2A0A0; --ok:#8EE0BC; --ok-bg:#1B4A3B;
+  --warn:#F6CD8C; --warn-bg:#4A3714;
 }
 html{scroll-padding-top:env(safe-area-inset-top, 0px);scroll-behavior:smooth}
 *,*::before,*::after{box-sizing:border-box}
@@ -46,10 +50,10 @@ h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0}
 .hero{background:var(--hero-bg);color:var(--hero-ink);padding-bottom:56px}
 .nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding:16px 0 40px}
 .brand{font-family:"Space Grotesk",Inter,sans-serif;font-weight:700;font-size:22px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
-.nav-links{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px}
-.nav-links a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
 .hero h1{font-size:clamp(40px,7vw,68px);line-height:1.05;letter-spacing:-0.02em;margin-bottom:16px}
-.hero p{margin:0;font-size:20px;max-width:620px;color:var(--hero-muted)}
+.hero p{margin:0;font-size:20px;max-width:640px;color:var(--hero-muted)}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.hero .btn-light{border-color:var(--hero-muted);color:var(--hero-ink)}
 
 /* sections */
 section{padding:64px 0 24px}
@@ -59,19 +63,30 @@ section{padding:64px 0 24px}
 .form-col{flex:1 1 460px;min-width:0}
 .prev-col{flex:1 1 320px;min-width:0;max-width:420px}
 .prev-label{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 12px}
+.notice{background:var(--chip);border-radius:14px;padding:14px 18px;margin:24px 0 0;font-size:16px}
 
-/* notice */
-.notice{background:var(--chip);border-radius:14px;padding:14px 18px;margin:0 0 24px;font-size:16px}
+/* cómo funciona / elegir */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;min-width:0}
+.panel h3{font-size:22px;margin-bottom:12px}
+.panel ol{margin:0 0 20px;padding-left:22px}
+.panel li{margin-bottom:8px}
+.choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:760px}
+.choice button{text-align:left;padding:24px;border-radius:20px;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;min-height:120px}
+.choice button:hover{border-color:var(--ink)}
+.choice b{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:22px;margin-bottom:4px}
+.choice span{color:var(--muted);font-size:16px}
+.linkbtn{background:none;border:0;padding:0;margin:0;font:inherit;font-size:15px;color:var(--muted);text-decoration:underline;cursor:pointer;min-height:44px}
 
 /* cuenta */
-.account{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin:0 0 32px}
+.account{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin:24px 0 0}
 .account p{margin:0;font-weight:500;overflow-wrap:anywhere;flex:1 1 260px}
 
 /* form */
 .field{margin:0 0 24px;border:0;padding:0;min-width:0}
 .field>label,.field>legend{display:block;font-weight:600;margin-bottom:6px;padding:0}
 .hint{display:block;font-size:14px;color:var(--muted);margin-top:6px;font-weight:400}
-input[type="text"],select,textarea{width:100%;min-height:48px;padding:10px 14px;border:1.5px solid var(--line-strong);border-radius:12px;background:var(--input);color:var(--ink);font:inherit}
+input[type="text"],input[type="tel"],select,textarea{width:100%;min-height:48px;padding:10px 14px;border:1.5px solid var(--line-strong);border-radius:12px;background:var(--input);color:var(--ink);font:inherit}
 textarea{min-height:120px;resize:vertical}
 .chips{display:flex;flex-wrap:wrap;gap:10px}
 .chip{position:relative;display:inline-block}
@@ -84,7 +99,7 @@ textarea{min-height:120px;resize:vertical}
 .file-btn{position:relative;overflow:hidden}
 .file-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .file-btn:focus-within{outline:3px solid var(--focus);outline-offset:3px}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;border:2px solid var(--line-strong);background:transparent;color:var(--ink);font:inherit;font-weight:600;font-size:16px;cursor:pointer;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;border:2px solid var(--line-strong);background:transparent;color:var(--ink);font:inherit;font-weight:600;font-size:16px;cursor:pointer;text-decoration:none;text-align:center}
 .btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);min-height:52px;padding:0 32px;font-size:17px}
 .btn:disabled{opacity:.55;cursor:not-allowed}
 .btn-danger{border-color:var(--danger);color:var(--danger)}
@@ -94,6 +109,7 @@ textarea{min-height:120px;resize:vertical}
 .status{margin:16px 0 0;font-weight:500;min-height:1.6em}
 .status.err{color:var(--danger)}
 .status.ok{color:var(--ok)}
+.private{border-left:4px solid var(--accent);padding-left:16px}
 
 /* cards */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
@@ -111,8 +127,26 @@ textarea{min-height:120px;resize:vertical}
 .bio{margin:0;font-size:16px;overflow-wrap:anywhere;white-space:pre-line}
 .small{font-size:13px;color:var(--muted);margin:0}
 .card .btn{align-self:flex-start;min-height:44px;font-size:15px}
+.req{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px;margin-top:auto}
+.req label{font-weight:600;font-size:15px}
+.req textarea{min-height:90px}
+.req p{margin:0;font-size:15px}
 
-/* directory */
+/* listas */
+.list{display:flex;flex-direction:column;gap:12px;margin:0 0 32px}
+.row{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.row .info{flex:1 1 280px;min-width:0}
+.row .info b{display:block;overflow-wrap:anywhere}
+.row .info p{margin:4px 0 0}
+.row .btn{min-height:44px;font-size:15px;padding:0 20px}
+.msg{font-size:15px;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere}
+.pill{display:inline-block;padding:2px 12px;border-radius:999px;font-size:13px;font-weight:600;background:var(--chip);color:var(--ink)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.empty-note{color:var(--muted);margin:0 0 32px}
+.sub-title{font-size:22px;margin:0 0 12px}
+
+/* directorio */
 .filters{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 24px;align-items:flex-end}
 .filters .field{margin:0;flex:1 1 220px}
 .count{margin:0 0 16px;color:var(--muted);font-size:15px}
@@ -129,29 +163,82 @@ footer p{margin:0 0 8px}
   <div class="wrap">
     <nav class="nav" aria-label="Principal">
       <a class="brand" href="#top">Mi Trayectoria</a>
-      <div class="nav-links">
-        <a href="#publicar">Publicá tu perfil</a>
-        <a href="#perfiles">Perfiles</a>
-      </div>
     </nav>
     <h1 id="top">Tu trabajo habla por vos.</h1>
-    <p>Armá tu perfil con tu foto, tu experiencia, dónde vivís y qué trabajo buscás. Es gratis y lo podés editar o borrar cuando quieras.</p>
+    <p>Un lugar para que quienes trabajan en casas de familia muestren su experiencia, y para que las familias encuentren a la persona indicada.</p>
+    <div class="hero-cta" id="hero-cta">
+      <button type="button" class="btn btn-primary" id="cta-worker">Busco trabajo</button>
+      <button type="button" class="btn btn-light" id="cta-employer">Busco a alguien para mi casa</button>
+    </div>
   </div>
 </header>
 
 <main>
-<section id="publicar">
+<div class="wrap">
+  <p class="notice" id="notice" hidden></p>
+  <div class="account" id="account" hidden>
+    <p id="acc-text"></p>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="login" hidden>Entrar con Google</button>
+      <button type="button" class="btn" id="logout" hidden>Salir</button>
+    </div>
+  </div>
+  <p class="status" id="top-status" role="status" aria-live="polite"></p>
+</div>
+
+<!-- Cómo funciona (sin sesión) -->
+<section id="como" hidden>
   <div class="wrap">
-    <h2 class="sec-title" id="form-title">Publicá tu perfil</h2>
-    <p class="sec-sub">Completá los datos básicos. A la derecha ves cómo va a quedar tu ficha.</p>
-    <p class="notice" id="notice" hidden></p>
-    <div class="account" id="account" hidden>
-      <p id="acc-text"></p>
-      <div class="actions">
-        <button type="button" class="btn btn-primary" id="login" hidden>Entrar con Google</button>
-        <button type="button" class="btn" id="logout" hidden>Salir</button>
+    <h2 class="sec-title">¿Cómo funciona?</h2>
+    <p class="sec-sub">Es gratis. Para entrar usás tu cuenta de Google.</p>
+    <div class="steps">
+      <div class="panel">
+        <h3>Si buscás trabajo</h3>
+        <ol>
+          <li>Entrá con tu cuenta de Google.</li>
+          <li>Armá tu perfil con tu experiencia y el trabajo que buscás.</li>
+          <li>Cuando una familia quiera entrevistarte, vas a ver el pedido acá y decidís si aceptás.</li>
+        </ol>
+        <p class="small">Tu WhatsApp no se publica. Solo lo ve la familia si vos aceptás la entrevista.</p>
+      </div>
+      <div class="panel">
+        <h3>Si buscás a alguien para tu casa</h3>
+        <ol>
+          <li>Entrá con tu cuenta de Google y completá tus datos.</li>
+          <li>Revisamos tu cuenta para cuidar a las personas que publican su perfil.</li>
+          <li>Mirá los perfiles y pedí una entrevista. Si la persona acepta, se pasan los WhatsApp.</li>
+        </ol>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Elegir opción -->
+<section id="elegir" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">¿Qué estás buscando?</h2>
+    <p class="sec-sub">Elegí una opción para seguir. Cada cuenta de Google se usa para una sola de las dos.</p>
+    <div class="choice">
+      <button type="button" id="pick-worker"><b>Busco trabajo</b><span>Quiero publicar mi perfil.</span></button>
+      <button type="button" id="pick-employer"><b>Busco a alguien para mi casa</b><span>Quiero ver perfiles y pedir entrevistas.</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- Trabajadora: pedidos -->
+<section id="pedidos" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">Pedidos de entrevista</h2>
+    <p class="sec-sub">Cuando una familia quiera entrevistarte, aparece acá. Si aceptás, le pasamos tu WhatsApp y vos ves el suyo.</p>
+    <div class="list" id="inbox"></div>
+  </div>
+</section>
+
+<!-- Trabajadora: perfil -->
+<section id="publicar" hidden>
+  <div class="wrap">
+    <h2 class="sec-title" id="form-title">Publicá tu perfil</h2>
+    <p class="sec-sub">Completá los datos básicos. Mientras escribís, vas a ver cómo queda tu ficha.</p>
 
     <div class="split">
       <form class="form-col" id="form" novalidate>
@@ -212,9 +299,15 @@ footer p{margin:0 0 8px}
           <span class="hint">Con retiro: volvés a tu casa al terminar el día. Sin retiro: vivís en la casa donde trabajás.</span>
         </div>
 
+        <div class="field private">
+          <label for="f-wa">Tu WhatsApp (no se publica)</label>
+          <input type="tel" id="f-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
+          <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve una familia si vos aceptás su pedido de entrevista.</span>
+        </div>
+
         <div class="check">
           <input type="checkbox" id="f-consent">
-          <label for="f-consent">Acepto que estos datos se publiquen en esta página. Puedo editarlos o borrarlos cuando quiera.</label>
+          <label for="f-consent">Acepto que las familias registradas en esta página vean mi perfil. Puedo editarlo o borrarlo cuando quiera.</label>
         </div>
 
         <div class="actions">
@@ -222,6 +315,7 @@ footer p{margin:0 0 8px}
           <button type="button" class="btn btn-danger" id="delete" hidden>Borrar mi perfil</button>
         </div>
         <p class="status" id="status" role="status" aria-live="polite"></p>
+        <button type="button" class="linkbtn" id="worker-back" hidden>Me equivoqué: busco a alguien para mi casa</button>
       </form>
 
       <div class="prev-col">
@@ -232,9 +326,56 @@ footer p{margin:0 0 8px}
   </div>
 </section>
 
-<section id="perfiles">
+<!-- Empleador -->
+<section id="empleador" hidden>
   <div class="wrap">
-    <h2 class="sec-title">Perfiles publicados</h2>
+    <h2 class="sec-title" id="emp-title">Tus datos</h2>
+    <p class="sec-sub" id="emp-sub">Para cuidar a las personas que publican su perfil, revisamos cada cuenta antes de mostrarle los perfiles.</p>
+    <p class="notice" id="emp-state" hidden></p>
+    <form class="form-col" id="emp-form" novalidate style="max-width:560px;margin-top:24px">
+      <div class="field">
+        <label for="e-name">Tu nombre y apellido</label>
+        <input type="text" id="e-name" maxlength="60" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="e-loc">Localidad donde necesitás la ayuda</label>
+        <input type="text" id="e-loc" maxlength="60" placeholder="Por ejemplo: Pilar" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="e-wa">Tu WhatsApp</label>
+        <input type="tel" id="e-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
+        <span class="hint">Con código de área, sin 0 ni 15. Lo usamos para avisarte cuando tu cuenta esté aprobada, y lo ve la persona que acepte tu pedido de entrevista.</span>
+      </div>
+      <div class="check">
+        <input type="checkbox" id="e-consent">
+        <label for="e-consent">Acepto que Mi Trayectoria revise mis datos y que, si una persona acepta mi pedido de entrevista, vea mi nombre y mi WhatsApp.</label>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary" id="e-save">Enviar mis datos</button>
+      </div>
+      <p class="status" id="e-status" role="status" aria-live="polite"></p>
+      <button type="button" class="linkbtn" id="emp-back" hidden>Me equivoqué: busco trabajo</button>
+    </form>
+  </div>
+</section>
+
+<!-- Administración -->
+<section id="admin" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">Administración</h2>
+    <p class="sec-sub">Solo vos ves esta parte.</p>
+    <h3 class="sub-title">Empleadores</h3>
+    <div class="list" id="adm-employers"></div>
+    <h3 class="sub-title">Pedidos sin responder</h3>
+    <p class="small" style="margin:-4px 0 12px">La página no puede avisarle sola a la persona. Si un pedido lleva días sin respuesta, escribile por WhatsApp.</p>
+    <div class="list" id="adm-requests"></div>
+  </div>
+</section>
+
+<!-- Perfiles -->
+<section id="perfiles" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">Perfiles</h2>
     <p class="sec-sub">Personas que buscan trabajo en casas de familia. Filtrá por localidad o por tipo de trabajo.</p>
     <div class="filters">
       <div class="field">
@@ -256,7 +397,7 @@ footer p{margin:0 0 8px}
 <footer>
   <div class="wrap">
     <p><b>Mi Trayectoria</b> · Proyecto en etapa de validación.</p>
-    <p>Mi Trayectoria no es una bolsa de trabajo ni una agencia. Los datos de cada perfil los carga la propia persona y no equivalen a una referencia confirmada ni a una garantía de idoneidad.</p>
+    <p>Mi Trayectoria no es una agencia. Los datos de cada perfil los carga la propia persona y no equivalen a una referencia confirmada ni a una garantía de idoneidad.</p>
   </div>
 </footer>
 
@@ -265,9 +406,8 @@ footer p{margin:0 0 8px}
   "use strict";
 
   /* ===== CONFIGURACIÓN DE FIREBASE =====
-     Reemplazá cada "PEGAR_AQUI" con los datos de tu proyecto.
-     Están en la consola de Firebase → Configuración del proyecto → Tus apps.
-     Estos datos no son secretos: lo que protege la información son las reglas de seguridad (archivo firestore.rules). */
+     Datos del proyecto (consola de Firebase → Configuración del proyecto → Tus apps).
+     No son secretos: lo que protege la información son las reglas de seguridad (archivo firestore.rules). */
   var FIREBASE_CONFIG = {
     apiKey: "AIzaSyAMyJSy-SzWJkfpnJUMCGbjEB1HZgBS_To",
     authDomain: "mi-trayectoria-9e5e5.firebaseapp.com",
@@ -277,15 +417,34 @@ footer p{margin:0 0 8px}
     appId: "1:415541831042:web:22aed2817a1af8d4da1b9b"
   };
   var FIREBASE_SDK = "https://www.gstatic.com/firebasejs/10.12.2/";
+  var SITE_URL = "https://mitrayectoria.github.io/";
 
   var TASKS = ["Limpieza y organización", "Cocina", "Planchado", "Cuidado de niños", "Cuidado de personas mayores", "Otras tareas"];
   var YEARS = { "lt1": "Menos de 1 año", "1-3": "Entre 1 y 3 años", "4-10": "Entre 4 y 10 años", "10+": "Más de 10 años" };
   var MODES = { "con-retiro": "Con retiro", "sin-retiro": "Sin retiro", "horas": "Por horas" };
+  var EMP_STATUS = { "pending": "En revisión", "approved": "Aprobado", "rejected": "No aprobado" };
 
   var $ = function (id) { return document.getElementById(id); };
   var FB = null; /* funciones de Firebase, se cargan en start() */
-  var S = { db: null, auth: null, authReady: false, uid: null, userLabel: "", isOwner: false, profiles: [], mine: null, photo: "", dirty: false, filled: false, loaded: false, busy: false };
+  var unsubs = [];
+  var S;
 
+  function freshState() {
+    return {
+      uid: null, userLabel: "", isAdmin: false,
+      mine: null, mineLoaded: false, contact: "", contactLoaded: false,
+      employer: null, employerLoaded: false,
+      profiles: [], profilesLoaded: false,
+      sent: {}, inbox: [], allEmployers: [], allReqs: [],
+      waCache: {}, empCache: {},
+      photo: "", dirty: false, filled: false, empDirty: false, empFilled: false, busy: false,
+      openReq: null, reqDraft: "", listening: {}
+    };
+  }
+  S = freshState();
+  S.db = null; S.auth = null; S.authReady = false; S.intent = readIntent();
+
+  /* ---------- utilidades ---------- */
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -293,6 +452,48 @@ footer p{margin:0 0 8px}
     return n;
   }
   function str(v, n) { return typeof v === "string" ? v.slice(0, n) : ""; }
+  function toDate(v) {
+    if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+    if (v && typeof v.toDate === "function") return v.toDate();
+    if (typeof v === "string") { var d = new Date(v); return isNaN(d.getTime()) ? null : d; }
+    return null;
+  }
+  function fmtDate(v) { var d = toDate(v); return d ? d.toLocaleDateString("es-AR") : ""; }
+  function snapData(s) { return s.data({ serverTimestamps: "estimate" }) || {}; }
+
+  /* Teléfono argentino: 10 números (código de área + número), sin 0 ni 15. */
+  function normPhone(v) {
+    var d = String(v || "").replace(/\D/g, "");
+    if (d.length === 13 && d.indexOf("549") === 0) d = d.slice(3);
+    else if (d.length === 12 && d.indexOf("54") === 0) d = d.slice(2);
+    if (d.length === 11 && d.charAt(0) === "0") d = d.slice(1);
+    return d;
+  }
+  function validPhone(d) { return /^[0-9]{10}$/.test(d); }
+  function waLink(d, text) { return "https://wa.me/549" + d + (text ? "?text=" + encodeURIComponent(text) : ""); }
+  function waAnchor(d, label, text) {
+    var a = el("a", "btn btn-primary", label);
+    a.href = waLink(d, text);
+    a.target = "_blank";
+    a.rel = "noopener";
+    return a;
+  }
+
+  function readIntent() {
+    try { var v = sessionStorage.getItem("mt-intent"); return v === "worker" || v === "employer" ? v : null; } catch (e) { return null; }
+  }
+  function setIntent(v) {
+    S.intent = v;
+    try { if (v) sessionStorage.setItem("mt-intent", v); else sessionStorage.removeItem("mt-intent"); } catch (e) {}
+  }
+
+  function errMsg(e) {
+    var c = e && e.code;
+    if (c === "permission-denied") return "No tenés permiso para hacer esto. Salí y volvé a entrar con tu cuenta.";
+    if (c === "unavailable") return "No hay conexión. Probá de nuevo en un momento.";
+    if (c === "resource-exhausted") return "Se llegó al límite de uso de la página. Avisale a quien la administra.";
+    return "No se pudo completar. Probá de nuevo en un momento.";
+  }
 
   /* Los datos compartidos no son de confianza: se limpian antes de mostrarlos. */
   function clean(id, raw) {
@@ -308,11 +509,57 @@ footer p{margin:0 0 8px}
       tasks: tasks,
       mode: MODES[raw.mode] ? raw.mode : "",
       photo: photo,
-      updatedAt: str(raw.updatedAt, 40)
+      updatedAt: toDate(raw.updatedAt)
+    };
+  }
+  function cleanEmployer(id, raw) {
+    raw = raw || {};
+    var wa = typeof raw.whatsapp === "string" && validPhone(raw.whatsapp) ? raw.whatsapp : "";
+    return { id: id, name: str(raw.name, 60), locality: str(raw.locality, 60), whatsapp: wa, status: EMP_STATUS[raw.status] ? raw.status : "pending", createdAt: toDate(raw.createdAt) };
+  }
+  function cleanReq(id, raw) {
+    raw = raw || {};
+    var st = raw.status === "accepted" || raw.status === "rejected" ? raw.status : "pending";
+    return {
+      id: id, employerId: str(raw.employerId, 128), workerId: str(raw.workerId, 128),
+      employerName: str(raw.employerName, 60), employerLocality: str(raw.employerLocality, 60),
+      workerName: str(raw.workerName, 60), message: str(raw.message, 300), status: st,
+      createdAt: toDate(raw.createdAt)
     };
   }
 
-  /* ---------- tarjeta ---------- */
+  /* Botón de dos pasos para acciones que no se pueden deshacer. */
+  function twoStep(btn, label, confirmLabel, action, statusEl) {
+    var armed = false, timer = null;
+    btn.addEventListener("click", function () {
+      if (!armed) {
+        armed = true;
+        btn.textContent = confirmLabel;
+        timer = setTimeout(function () { armed = false; btn.textContent = label; }, 5000);
+        return;
+      }
+      clearTimeout(timer);
+      armed = false;
+      btn.disabled = true;
+      Promise.resolve().then(action).then(function () {
+        btn.textContent = label;
+        btn.disabled = false;
+      }, function (e) {
+        btn.textContent = label;
+        btn.disabled = false;
+        setMsg(statusEl || $("top-status"), errMsg(e), "err");
+      });
+    });
+  }
+
+  function setMsg(node, msg, kind) {
+    node.textContent = msg || "";
+    node.className = "status" + (kind ? " " + kind : "");
+  }
+  function setStatus(msg, kind) { setMsg($("status"), msg, kind); }
+  function setNotice(msg) { $("notice").textContent = msg || ""; $("notice").hidden = !msg; }
+
+  /* ---------- tarjeta de perfil ---------- */
   function buildCard(p, o) {
     o = o || {};
     var card = el("article", "card");
@@ -344,11 +591,8 @@ footer p{margin:0 0 8px}
     var look = el("div", "kv");
     look.appendChild(el("b", null, "Busca trabajo de"));
     var tags = el("div", "tags");
-    if (p.tasks.length) {
-      p.tasks.forEach(function (t) { tags.appendChild(el("span", "tag", t)); });
-    } else {
-      tags.appendChild(el("span", "tag", "Sin completar"));
-    }
+    if (p.tasks.length) p.tasks.forEach(function (t) { tags.appendChild(el("span", "tag", t)); });
+    else tags.appendChild(el("span", "tag", "Sin completar"));
     look.appendChild(tags);
     card.appendChild(look);
 
@@ -359,48 +603,134 @@ footer p{margin:0 0 8px}
       card.appendChild(m);
     }
     if (p.bio) card.appendChild(el("p", "bio", p.bio));
+    if (!o.preview && p.updatedAt) card.appendChild(el("p", "small", "Actualizado el " + fmtDate(p.updatedAt)));
 
-    if (!o.preview && p.updatedAt) {
-      var d = new Date(p.updatedAt);
-      if (!isNaN(d.getTime())) card.appendChild(el("p", "small", "Actualizado el " + d.toLocaleDateString("es-AR")));
-    }
+    if (o.canRequest) card.appendChild(buildReqArea(p));
 
-    if (o.owner && !o.mine && !o.preview) {
+    if (o.admin && !o.mine) {
       var rm = el("button", "btn btn-danger", "Quitar este perfil");
       rm.type = "button";
-      twoStep(rm, "Quitar este perfil", "Confirmar: quitar", function () {
-        return FB.deleteDoc(FB.doc(S.db, "profiles", p.id));
-      });
+      twoStep(rm, "Quitar este perfil", "Confirmar: quitar", function () { return deleteWorker(p.id); });
       card.appendChild(rm);
     }
     return card;
   }
 
-  /* Botón de dos pasos para acciones que no se pueden deshacer. */
-  function twoStep(btn, label, confirmLabel, action) {
-    var armed = false, timer = null;
-    btn.addEventListener("click", function () {
-      if (!armed) {
-        armed = true;
-        btn.textContent = confirmLabel;
-        timer = setTimeout(function () { armed = false; btn.textContent = label; }, 5000);
-        return;
+  /* Botón y estados del pedido de entrevista (vista de empleador aprobado). */
+  function buildReqArea(p) {
+    var box = el("div", "req");
+    var r = S.sent[p.id];
+    if (!r) {
+      if (S.openReq === p.id) {
+        var lab = el("label", null, "Contale brevemente qué necesitás (opcional)");
+        lab.htmlFor = "rq-" + p.id;
+        var ta = document.createElement("textarea");
+        ta.id = "rq-" + p.id;
+        ta.maxLength = 300;
+        ta.placeholder = "Por ejemplo: zona, días y horarios.";
+        ta.value = S.reqDraft;
+        ta.addEventListener("input", function () { S.reqDraft = ta.value; });
+        var acts = el("div", "actions");
+        var send = el("button", "btn btn-primary", "Enviar pedido");
+        send.type = "button";
+        var cancel = el("button", "btn", "Cancelar");
+        cancel.type = "button";
+        var st = el("p", "status");
+        st.setAttribute("role", "status");
+        send.addEventListener("click", function () {
+          send.disabled = true;
+          setMsg(st, "Enviando…");
+          sendRequest(p, ta.value.trim()).then(function () {
+            S.openReq = null; S.reqDraft = "";
+          }, function (e) {
+            send.disabled = false;
+            setMsg(st, errMsg(e), "err");
+          });
+        });
+        cancel.addEventListener("click", function () { S.openReq = null; S.reqDraft = ""; renderDirectory(); });
+        acts.appendChild(send);
+        acts.appendChild(cancel);
+        box.appendChild(lab);
+        box.appendChild(ta);
+        box.appendChild(acts);
+        box.appendChild(st);
+        setTimeout(function () { if (document.activeElement === document.body || !document.activeElement) ta.focus(); }, 0);
+      } else {
+        var b = el("button", "btn btn-primary", "Pedir una entrevista");
+        b.type = "button";
+        b.addEventListener("click", function () {
+          S.openReq = p.id; S.reqDraft = "";
+          renderDirectory();
+          var t = $("rq-" + p.id); if (t) t.focus();
+        });
+        box.appendChild(b);
       }
-      clearTimeout(timer);
-      armed = false;
-      btn.disabled = true;
-      Promise.resolve().then(action).then(function () {
-        btn.textContent = label;
-        btn.disabled = false;
-      }, function () {
-        btn.textContent = label;
-        btn.disabled = false;
-        setStatus("No se pudo completar la acción. Probá de nuevo.", "err");
-      });
+    } else if (r.status === "pending") {
+      box.appendChild(el("span", "pill warn", "Pedido enviado"));
+      box.appendChild(el("p", null, "Esperando su respuesta. Cuando acepte, vas a ver su WhatsApp acá."));
+      var c = el("button", "btn", "Cancelar pedido");
+      c.type = "button";
+      twoStep(c, "Cancelar pedido", "Confirmar: cancelar", function () { return FB.deleteDoc(FB.doc(S.db, "requests", r.id)); });
+      box.appendChild(c);
+    } else if (r.status === "accepted") {
+      box.appendChild(el("span", "pill ok", "Aceptó la entrevista"));
+      var wa = S.waCache[p.id];
+      if (wa) {
+        box.appendChild(el("p", null, "WhatsApp: " + wa));
+        box.appendChild(waAnchor(wa, "Escribirle por WhatsApp", "Hola " + p.name + ", soy " + (S.employer ? S.employer.name : "") + ". Vi tu perfil en Mi Trayectoria y me gustaría coordinar la entrevista."));
+      } else if (wa === "") {
+        box.appendChild(el("p", null, "Todavía no cargó su WhatsApp. Probá más tarde."));
+      } else {
+        box.appendChild(el("p", null, "Cargando su WhatsApp…"));
+        loadWorkerContact(p.id);
+      }
+    } else {
+      box.appendChild(el("span", "pill", "No disponible"));
+      box.appendChild(el("p", null, "Por ahora no puede tomar la entrevista."));
+    }
+    return box;
+  }
+
+  function sendRequest(p, msg) {
+    return FB.setDoc(FB.doc(S.db, "requests", S.uid + "_" + p.id), {
+      employerId: S.uid, workerId: p.id,
+      employerName: S.employer.name, employerLocality: S.employer.locality,
+      workerName: p.name, message: msg, status: "pending",
+      createdAt: FB.serverTimestamp(), updatedAt: FB.serverTimestamp()
     });
   }
 
-  /* ---------- formulario ---------- */
+  function loadWorkerContact(wid) {
+    if (S.waCache[wid] !== undefined) return;
+    S.waCache[wid] = null;
+    var uid = S.uid;
+    FB.getDoc(FB.doc(S.db, "profiles", wid, "private", "contact")).then(function (s) {
+      if (S.uid !== uid) return;
+      var d = s.exists() ? snapData(s) : {};
+      S.waCache[wid] = typeof d.whatsapp === "string" && validPhone(d.whatsapp) ? d.whatsapp : "";
+      renderDirectory(); renderAdmin();
+    }, function () { if (S.uid === uid) { delete S.waCache[wid]; } });
+  }
+
+  function loadEmployer(eid) {
+    if (S.empCache[eid] !== undefined) return;
+    S.empCache[eid] = null;
+    var uid = S.uid;
+    FB.getDoc(FB.doc(S.db, "employers", eid)).then(function (s) {
+      if (S.uid !== uid) return;
+      S.empCache[eid] = s.exists() ? cleanEmployer(s.id, snapData(s)) : false;
+      renderInbox();
+    }, function () { if (S.uid === uid) delete S.empCache[eid]; });
+  }
+
+  function deleteWorker(wid) {
+    var b = FB.writeBatch(S.db);
+    b.delete(FB.doc(S.db, "profiles", wid, "private", "contact"));
+    b.delete(FB.doc(S.db, "profiles", wid));
+    return b.commit();
+  }
+
+  /* ---------- formulario de la trabajadora ---------- */
   function readForm() {
     var tasks = [];
     var boxes = $("f-tasks").querySelectorAll("input[type=checkbox]");
@@ -413,6 +743,7 @@ footer p{margin:0 0 8px}
       tasks: tasks,
       mode: $("f-mode").value,
       photo: S.photo,
+      whatsapp: normPhone($("f-wa").value),
       consent: $("f-consent").checked
     };
   }
@@ -433,9 +764,7 @@ footer p{margin:0 0 8px}
 
   function resetForm() {
     $("form").reset();
-    S.photo = "";
-    S.dirty = false;
-    S.filled = false;
+    S.photo = ""; S.dirty = false; S.filled = false;
     $("bio-count").textContent = "0";
     updatePreview();
   }
@@ -444,7 +773,7 @@ footer p{margin:0 0 8px}
     var f = readForm();
     var box = $("preview");
     box.textContent = "";
-    box.appendChild(buildCard({ name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo, updatedAt: "" }, { preview: true }));
+    box.appendChild(buildCard({ name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo }, { preview: true }));
     var th = $("photo-thumb");
     th.textContent = "";
     var big;
@@ -461,44 +790,13 @@ footer p{margin:0 0 8px}
     $("photo-remove").hidden = !f.photo;
   }
 
-  function setStatus(msg, kind) {
-    var s = $("status");
-    s.textContent = msg || "";
-    s.className = "status" + (kind ? " " + kind : "");
-  }
-  function setNotice(msg) {
-    var n = $("notice");
-    n.textContent = msg || "";
-    n.hidden = !msg;
-  }
-
-  function canPublish() { return !!(S.db && S.uid); }
-
-  function renderAccount() {
-    var box = $("account");
-    if (!S.auth) { box.hidden = true; return; }
-    box.hidden = false;
-    $("acc-text").textContent = S.uid
-      ? "Entraste como " + S.userLabel + "."
-      : (S.authReady ? "Para publicar tu perfil, entrá con tu cuenta de Google. Ver los perfiles no necesita cuenta." : "Revisando tu sesión…");
-    $("login").hidden = !S.authReady || !!S.uid;
-    $("logout").hidden = !S.uid;
-  }
-
-  function refreshControls() {
-    $("save").disabled = S.busy || !canPublish();
-    $("delete").hidden = !(S.mine && canPublish());
-    $("save").textContent = S.mine ? "Guardar cambios" : "Publicar mi perfil";
-    $("form-title").textContent = S.mine ? "Editá tu perfil" : "Publicá tu perfil";
-    renderAccount();
-  }
-
   function validate(f) {
     if (f.name.length < 2) return "Escribí tu nombre o apodo.";
     if (!f.locality) return "Escribí la localidad donde vivís.";
     if (!f.years) return "Elegí tus años de experiencia.";
     if (!f.tasks.length) return "Elegí al menos un tipo de trabajo que buscás.";
-    if (!f.consent) return "Marcá que aceptás que tus datos se publiquen.";
+    if (!validPhone(f.whatsapp)) return "Escribí tu WhatsApp con código de área, sin 0 ni 15: son 10 números. Por ejemplo: 11 2345 6789.";
+    if (!f.consent) return "Marcá que aceptás que las familias registradas vean tu perfil.";
     return "";
   }
 
@@ -506,29 +804,31 @@ footer p{margin:0 0 8px}
 
   function save(ev) {
     ev.preventDefault();
-    if (!canPublish()) return;
+    if (!S.db || !S.uid) return;
     var f = readForm();
     var err = validate(f);
     if (err) { setStatus(err, "err"); return; }
     S.busy = true;
-    refreshControls();
+    render();
     setStatus("Guardando…");
     var data = { name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo, updatedAt: FB.serverTimestamp() };
-    var ref = FB.doc(S.db, "profiles", S.uid);
-    FB.setDoc(ref, data).catch(function (e) {
-      if (e && e.code === "unavailable") return wait(600 + Math.random() * 600).then(function () { return FB.setDoc(ref, data); });
+    var commit = function () {
+      var b = FB.writeBatch(S.db);
+      b.set(FB.doc(S.db, "profiles", S.uid), data);
+      b.set(FB.doc(S.db, "profiles", S.uid, "private", "contact"), { whatsapp: f.whatsapp });
+      return b.commit();
+    };
+    commit().catch(function (e) {
+      if (e && e.code === "unavailable") return wait(600 + Math.random() * 600).then(commit);
       throw e;
     }).then(function () {
       setStatus("Listo: tu perfil está publicado.", "ok");
-      S.dirty = false;
+      S.dirty = false; S.contact = f.whatsapp; S.filled = true;
     }, function (e) {
-      var code = e && e.code;
-      if (code === "permission-denied") setStatus("No se pudo guardar. Revisá los datos o salí y volvé a entrar con tu cuenta.", "err");
-      else if (code === "resource-exhausted") setStatus("Se llegó al límite de uso de la página. Avisale a quien la administra.", "err");
-      else setStatus("No se pudo guardar. Probá de nuevo en un momento.", "err");
+      setStatus(e && e.code === "permission-denied" ? "No se pudo guardar. Revisá los datos o salí y volvé a entrar con tu cuenta." : errMsg(e), "err");
     }).then(function () {
       S.busy = false;
-      refreshControls();
+      render();
     });
   }
 
@@ -557,50 +857,156 @@ footer p{margin:0 0 8px}
     fr.readAsDataURL(file);
   }
 
-  /* ---------- cuenta de Google ---------- */
-  function login() {
-    setStatus("");
-    var provider = new FB.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
-    FB.signInWithPopup(S.auth, provider).catch(function (e) {
-      var c = e && e.code;
-      if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;
-      if (c === "auth/popup-blocked") setStatus("El navegador bloqueó la ventana para entrar. Permití las ventanas emergentes y probá de nuevo.", "err");
-      else if (c === "auth/unauthorized-domain") setStatus("Esta dirección todavía no está habilitada para entrar. Avisale a quien administra la página.", "err");
-      else if (c === "auth/network-request-failed") setStatus("No hay conexión. Probá de nuevo en un momento.", "err");
-      else setStatus("No se pudo entrar con Google. Si abriste la página desde WhatsApp, Instagram o Facebook, probá abrirla en Chrome.", "err");
+  /* ---------- pedidos recibidos (trabajadora) ---------- */
+  function answer(r, status) {
+    return FB.updateDoc(FB.doc(S.db, "requests", r.id), { status: status, updatedAt: FB.serverTimestamp() });
+  }
+
+  function renderInbox() {
+    var box = $("inbox");
+    box.textContent = "";
+    var items = S.inbox.slice().sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+    if (!items.length) {
+      box.appendChild(el("p", "empty-note", "Todavía no tenés pedidos. Cuando una familia quiera entrevistarte, lo vas a ver acá."));
+      return;
+    }
+    items.forEach(function (r) {
+      var row = el("div", "row");
+      var info = el("div", "info");
+      info.appendChild(el("b", null, r.employerName + (r.employerLocality ? " · " + r.employerLocality : "")));
+      if (r.message) info.appendChild(el("p", "msg", "“" + r.message + "”"));
+      info.appendChild(el("p", "small", "Pedido del " + fmtDate(r.createdAt)));
+      var acts = el("div", "actions");
+      if (r.status === "pending") {
+        var ok = el("button", "btn btn-primary", "Aceptar la entrevista");
+        ok.type = "button";
+        ok.addEventListener("click", function () {
+          ok.disabled = true;
+          answer(r, "accepted").catch(function (e) { ok.disabled = false; setMsg($("top-status"), errMsg(e), "err"); });
+        });
+        var no = el("button", "btn", "No, gracias");
+        no.type = "button";
+        twoStep(no, "No, gracias", "Confirmar: no aceptar", function () { return answer(r, "rejected"); });
+        acts.appendChild(ok);
+        acts.appendChild(no);
+      } else if (r.status === "accepted") {
+        info.appendChild(el("span", "pill ok", "Aceptaste"));
+        var emp = S.empCache[r.employerId];
+        if (emp === undefined) loadEmployer(r.employerId);
+        if (emp && emp.whatsapp) {
+          info.appendChild(el("p", "small", "Su WhatsApp: " + emp.whatsapp + ". También te puede escribir a vos."));
+          acts.appendChild(waAnchor(emp.whatsapp, "Escribirle por WhatsApp", "Hola, soy " + (S.mine ? S.mine.name : "") + ". Te escribo por Mi Trayectoria por la entrevista."));
+        } else if (emp === false) {
+          info.appendChild(el("p", "small", "Esta familia ya no está en la página."));
+        } else {
+          info.appendChild(el("p", "small", "Cargando su WhatsApp…"));
+        }
+      } else {
+        info.appendChild(el("span", "pill", "No aceptaste este pedido"));
+      }
+      row.appendChild(info);
+      row.appendChild(acts);
+      box.appendChild(row);
     });
   }
 
-  function logout() {
-    FB.signOut(S.auth).catch(function () { setStatus("No se pudo salir. Probá de nuevo.", "err"); });
+  /* ---------- empleador ---------- */
+  function fillEmp(e) {
+    $("e-name").value = e.name;
+    $("e-loc").value = e.locality;
+    $("e-wa").value = e.whatsapp;
+    $("e-consent").checked = true;
   }
 
-  function syncMine() {
-    var mine = null;
-    if (S.uid) for (var i = 0; i < S.profiles.length; i++) if (S.profiles[i].id === S.uid) mine = S.profiles[i];
-    S.mine = mine;
-    if (mine && !S.filled && !S.dirty) { fillForm(mine); S.filled = true; }
+  function saveEmp(ev) {
+    ev.preventDefault();
+    if (!S.db || !S.uid) return;
+    var name = $("e-name").value.trim(), loc = $("e-loc").value.trim(), wa = normPhone($("e-wa").value);
+    var st = $("e-status");
+    if (name.length < 2) { setMsg(st, "Escribí tu nombre y apellido.", "err"); return; }
+    if (!loc) { setMsg(st, "Escribí la localidad donde necesitás la ayuda.", "err"); return; }
+    if (!validPhone(wa)) { setMsg(st, "Escribí tu WhatsApp con código de área, sin 0 ni 15: son 10 números. Por ejemplo: 11 2345 6789.", "err"); return; }
+    if (!$("e-consent").checked) { setMsg(st, "Marcá que aceptás las condiciones.", "err"); return; }
+    $("e-save").disabled = true;
+    setMsg(st, "Enviando…");
+    var ref = FB.doc(S.db, "employers", S.uid);
+    var p = S.employer
+      ? FB.updateDoc(ref, { name: name, locality: loc, whatsapp: wa })
+      : FB.setDoc(ref, { name: name, locality: loc, whatsapp: wa, status: "pending", createdAt: FB.serverTimestamp() });
+    p.then(function () {
+      S.empDirty = false;
+      setMsg(st, "Listo: recibimos tus datos.", "ok");
+    }, function (e) {
+      setMsg(st, errMsg(e), "err");
+    }).then(function () { $("e-save").disabled = false; });
   }
 
-  function onAuth(user) {
-    var prev = S.uid;
-    S.authReady = true;
-    S.uid = user ? user.uid : null;
-    S.userLabel = user ? (user.email || user.displayName || "tu cuenta") : "";
-    S.isOwner = false;
-    if (prev && prev !== S.uid) { resetForm(); setStatus(""); }
-    syncMine();
-    renderDirectory();
-    refreshControls();
-    if (user) {
-      FB.getDoc(FB.doc(S.db, "admins", user.uid)).then(function (snap) {
-        if (S.uid === user.uid) { S.isOwner = snap.exists(); renderDirectory(); }
-      }, function () {});
-    }
+  /* ---------- administración ---------- */
+  function renderAdmin() {
+    if (!S.isAdmin) return;
+    var list = $("adm-employers");
+    list.textContent = "";
+    var order = { pending: 0, approved: 1, rejected: 2 };
+    var emps = S.allEmployers.slice().sort(function (a, b) { return (order[a.status] - order[b.status]) || ((b.createdAt || 0) - (a.createdAt || 0)); });
+    if (!emps.length) list.appendChild(el("p", "empty-note", "Todavía no se registró ningún empleador."));
+    emps.forEach(function (e) {
+      var row = el("div", "row");
+      var info = el("div", "info");
+      info.appendChild(el("b", null, e.name + " · " + e.locality));
+      info.appendChild(el("p", "small", "WhatsApp: " + (e.whatsapp || "—") + (e.createdAt ? " · Registrado el " + fmtDate(e.createdAt) : "")));
+      info.appendChild(el("span", "pill" + (e.status === "approved" ? " ok" : e.status === "pending" ? " warn" : ""), EMP_STATUS[e.status]));
+      var acts = el("div", "actions");
+      if (e.whatsapp) {
+        var w = waAnchor(e.whatsapp, "Escribirle", "Hola " + e.name + ", te escribimos de Mi Trayectoria.");
+        w.className = "btn";
+        acts.appendChild(w);
+      }
+      if (e.status !== "approved") {
+        var ok = el("button", "btn btn-primary", "Aprobar");
+        ok.type = "button";
+        ok.addEventListener("click", function () {
+          ok.disabled = true;
+          FB.updateDoc(FB.doc(S.db, "employers", e.id), { status: "approved" }).catch(function (er) { ok.disabled = false; setMsg($("top-status"), errMsg(er), "err"); });
+        });
+        acts.appendChild(ok);
+      }
+      if (e.status !== "rejected") {
+        var no = el("button", "btn btn-danger", e.status === "approved" ? "Quitar aprobación" : "Rechazar");
+        no.type = "button";
+        twoStep(no, no.textContent, "Confirmar", function () { return FB.updateDoc(FB.doc(S.db, "employers", e.id), { status: "rejected" }); });
+        acts.appendChild(no);
+      }
+      row.appendChild(info);
+      row.appendChild(acts);
+      list.appendChild(row);
+    });
+
+    var rl = $("adm-requests");
+    rl.textContent = "";
+    var pend = S.allReqs.filter(function (r) { return r.status === "pending"; }).sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
+    if (!pend.length) rl.appendChild(el("p", "empty-note", "No hay pedidos esperando respuesta."));
+    pend.forEach(function (r) {
+      var row = el("div", "row");
+      var info = el("div", "info");
+      info.appendChild(el("b", null, r.employerName + " quiere entrevistar a " + r.workerName));
+      info.appendChild(el("p", "small", "Pedido del " + fmtDate(r.createdAt)));
+      var acts = el("div", "actions");
+      var wa = S.waCache[r.workerId];
+      if (wa === undefined) loadWorkerContact(r.workerId);
+      if (wa) {
+        var a = waAnchor(wa, "Avisarle por WhatsApp", "Hola " + r.workerName + ", te escribimos de Mi Trayectoria. Tenés un pedido de entrevista. Entrá a " + SITE_URL + " con tu cuenta de Google para verlo.");
+        a.className = "btn";
+        acts.appendChild(a);
+      } else if (wa === "") {
+        info.appendChild(el("p", "small", "No cargó su WhatsApp."));
+      }
+      row.appendChild(info);
+      row.appendChild(acts);
+      rl.appendChild(row);
+    });
   }
 
-  /* ---------- listado ---------- */
+  /* ---------- directorio ---------- */
   function norm(s) { return s.trim().toLowerCase(); }
 
   function renderFilters() {
@@ -617,7 +1023,10 @@ footer p{margin:0 0 8px}
     locSel.value = seen[cur] ? cur : "";
   }
 
+  function canBrowse() { return S.isAdmin || !!(S.employer && S.employer.status === "approved"); }
+
   function renderDirectory() {
+    if (!canBrowse()) return;
     var loc = $("flt-loc").value, task = $("flt-task").value;
     var items = S.profiles.filter(function (p) {
       if (loc && norm(p.locality) !== loc) return false;
@@ -626,18 +1035,205 @@ footer p{margin:0 0 8px}
     });
     var grid = $("grid"), empty = $("empty");
     grid.textContent = "";
+    var isEmp = !!(S.employer && S.employer.status === "approved");
     items.forEach(function (p) {
-      grid.appendChild(buildCard(p, { mine: !!S.uid && p.id === S.uid, owner: S.isOwner }));
+      grid.appendChild(buildCard(p, { mine: p.id === S.uid, admin: S.isAdmin, canRequest: isEmp }));
     });
     $("count").textContent = items.length ? (items.length === 1 ? "1 perfil" : items.length + " perfiles") : "";
     if (!items.length) {
       empty.hidden = false;
-      empty.textContent = S.db
-        ? (S.loaded ? (S.profiles.length ? "No hay perfiles con esos filtros." : "Todavía no hay perfiles publicados. Podés ser la primera persona en publicar el tuyo.") : "Cargando perfiles…")
-        : "El listado de perfiles no está disponible en este momento.";
+      empty.textContent = S.profilesLoaded ? (S.profiles.length ? "No hay perfiles con esos filtros." : "Todavía no hay perfiles publicados.") : "Cargando perfiles…";
     } else {
       empty.hidden = true;
     }
+  }
+
+  /* ---------- suscripciones ---------- */
+  function listen(key, q, ok) {
+    if (S.listening[key]) return;
+    S.listening[key] = true;
+    unsubs.push(FB.onSnapshot(q, ok, function () { S.listening[key] = false; }));
+  }
+
+  function ensureDirectory() {
+    listen("profiles", FB.query(FB.collection(S.db, "profiles"), FB.orderBy("updatedAt", "desc"), FB.limit(200)), function (snap) {
+      S.profilesLoaded = true;
+      S.profiles = snap.docs.map(function (d) { return clean(d.id, snapData(d)); });
+      renderFilters();
+      renderDirectory();
+    });
+  }
+  function ensureSent() {
+    listen("sent", FB.query(FB.collection(S.db, "requests"), FB.where("employerId", "==", S.uid)), function (snap) {
+      var m = {};
+      snap.docs.forEach(function (d) { var r = cleanReq(d.id, snapData(d)); m[r.workerId] = r; });
+      S.sent = m;
+      renderDirectory();
+    });
+  }
+  function ensureInbox() {
+    listen("inbox", FB.query(FB.collection(S.db, "requests"), FB.where("workerId", "==", S.uid)), function (snap) {
+      S.inbox = snap.docs.map(function (d) { return cleanReq(d.id, snapData(d)); });
+      renderInbox();
+      render();
+    });
+  }
+  function ensureAdmin() {
+    listen("allEmployers", FB.collection(S.db, "employers"), function (snap) {
+      S.allEmployers = snap.docs.map(function (d) { return cleanEmployer(d.id, snapData(d)); });
+      renderAdmin();
+    });
+    listen("allReqs", FB.collection(S.db, "requests"), function (snap) {
+      S.allReqs = snap.docs.map(function (d) { return cleanReq(d.id, snapData(d)); });
+      renderAdmin();
+    });
+  }
+
+  function loadMyContact() {
+    if (S.contactLoaded) return;
+    S.contactLoaded = true;
+    var uid = S.uid;
+    FB.getDoc(FB.doc(S.db, "profiles", uid, "private", "contact")).then(function (s) {
+      if (S.uid !== uid) return;
+      var d = s.exists() ? snapData(s) : {};
+      S.contact = typeof d.whatsapp === "string" ? d.whatsapp : "";
+      if (!S.dirty && !$("f-wa").value) $("f-wa").value = S.contact;
+    }, function () { S.contactLoaded = false; });
+  }
+
+  /* ---------- cuenta de Google ---------- */
+  function login() {
+    setMsg($("top-status"), "");
+    var provider = new FB.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    FB.signInWithPopup(S.auth, provider).catch(function (e) {
+      var c = e && e.code, st = $("top-status");
+      if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;
+      if (c === "auth/popup-blocked") setMsg(st, "El navegador bloqueó la ventana para entrar. Permití las ventanas emergentes y probá de nuevo.", "err");
+      else if (c === "auth/unauthorized-domain") setMsg(st, "Esta dirección todavía no está habilitada para entrar. Avisale a quien administra la página.", "err");
+      else if (c === "auth/network-request-failed") setMsg(st, "No hay conexión. Probá de nuevo en un momento.", "err");
+      else setMsg(st, "No se pudo entrar con Google. Si abriste la página desde WhatsApp, Instagram o Facebook, probá abrirla en Chrome.", "err");
+    });
+  }
+  function startAs(role) {
+    setIntent(role);
+    if (S.uid) { render(); scrollToRole(); }
+    else if (S.auth) login();
+    else render();
+  }
+  function scrollToRole() {
+    var t = view() === "worker" ? $("publicar") : view() === "employer" ? $("empleador") : null;
+    if (t) t.scrollIntoView();
+  }
+  function logout() {
+    FB.signOut(S.auth).catch(function () { setMsg($("top-status"), "No se pudo salir. Probá de nuevo.", "err"); });
+  }
+
+  function onAuth(user) {
+    stopAll();
+    var keep = { db: S.db, auth: S.auth, intent: S.intent };
+    S = freshState();
+    S.db = keep.db; S.auth = keep.auth; S.authReady = true; S.intent = keep.intent;
+    resetForm(); setStatus("");
+    $("emp-form").reset(); setMsg($("e-status"), "");
+    setMsg($("top-status"), "");
+    if (!user) { render(); return; }
+
+    var uid = user.uid;
+    S.uid = uid;
+    S.userLabel = user.email || user.displayName || "tu cuenta";
+    render();
+
+    unsubs.push(FB.onSnapshot(FB.doc(S.db, "profiles", uid), function (s) {
+      S.mineLoaded = true;
+      S.mine = s.exists() ? clean(s.id, snapData(s)) : null;
+      if (S.mine) {
+        ensureInbox();
+        loadMyContact();
+        if (!S.filled && !S.dirty) { fillForm(S.mine); S.filled = true; }
+      }
+      render();
+    }, function () { S.mineLoaded = true; render(); }));
+
+    unsubs.push(FB.onSnapshot(FB.doc(S.db, "employers", uid), function (s) {
+      S.employerLoaded = true;
+      S.employer = s.exists() ? cleanEmployer(s.id, snapData(s)) : null;
+      if (S.employer) {
+        if (!S.empFilled && !S.empDirty) { fillEmp(S.employer); S.empFilled = true; }
+        if (S.employer.status === "approved") { ensureDirectory(); ensureSent(); }
+      }
+      render();
+      renderDirectory();
+    }, function () { S.employerLoaded = true; render(); }));
+
+    FB.getDoc(FB.doc(S.db, "admins", uid)).then(function (s) {
+      if (S.uid !== uid) return;
+      S.isAdmin = s.exists();
+      if (S.isAdmin) { ensureDirectory(); ensureAdmin(); }
+      render();
+      renderDirectory();
+    }, function () {});
+  }
+
+  function stopAll() {
+    unsubs.forEach(function (f) { try { f(); } catch (e) {} });
+    unsubs = [];
+  }
+
+  /* ---------- qué se muestra ---------- */
+  function view() {
+    if (!S.db) return "off";
+    if (!S.authReady) return "loading";
+    if (!S.uid) return "landing";
+    if (!S.mineLoaded || !S.employerLoaded) return "loading";
+    if (S.mine) return "worker";
+    if (S.employer) return "employer";
+    if (S.intent === "worker" || S.intent === "employer") return S.intent;
+    return S.isAdmin ? "admin" : "choose";
+  }
+
+  function render() {
+    var v = view();
+    $("hero-cta").hidden = !(v === "landing" || v === "off");
+    $("como").hidden = !(v === "landing" || v === "off");
+    $("elegir").hidden = !(v === "choose" || v === "admin");
+
+    var acc = $("account");
+    acc.hidden = !S.auth;
+    if (S.auth) {
+      $("acc-text").textContent = S.uid
+        ? "Entraste como " + S.userLabel + "."
+        : (S.authReady ? "¿Ya tenés cuenta? Entrá con Google." : "Revisando tu sesión…");
+      $("login").hidden = !S.authReady || !!S.uid;
+      $("logout").hidden = !S.uid;
+    }
+
+    var isWorker = v === "worker";
+    $("publicar").hidden = !isWorker;
+    $("pedidos").hidden = !(isWorker && S.mine);
+    $("worker-back").hidden = !(isWorker && !S.mine);
+    $("save").disabled = S.busy || !S.uid;
+    $("delete").hidden = !S.mine;
+    $("save").textContent = S.mine ? "Guardar cambios" : "Publicar mi perfil";
+    $("form-title").textContent = S.mine ? "Tu perfil" : "Publicá tu perfil";
+
+    var isEmp = v === "employer";
+    $("empleador").hidden = !isEmp;
+    if (isEmp) {
+      var e = S.employer, stEl = $("emp-state");
+      $("emp-back").hidden = !!e;
+      $("emp-form").hidden = !!(e && e.status !== "pending");
+      $("e-save").textContent = e ? "Guardar cambios" : "Enviar mis datos";
+      $("emp-sub").hidden = !!(e && e.status === "approved");
+      if (!e) { stEl.hidden = true; }
+      else if (e.status === "pending") { stEl.hidden = false; stEl.textContent = "Recibimos tus datos. Vamos a revisar tu cuenta y te escribimos por WhatsApp cuando esté aprobada. Mientras tanto podés corregir tus datos."; }
+      else if (e.status === "approved") { stEl.hidden = false; stEl.textContent = "Tu cuenta está aprobada. Más abajo podés ver los perfiles y pedir entrevistas. Si necesitás cambiar tus datos, escribinos."; }
+      else { stEl.hidden = false; stEl.textContent = "Tu cuenta no fue aprobada. Si creés que es un error, escribinos."; }
+      $("emp-title").textContent = e && e.status === "approved" ? "Hola, " + e.name : "Tus datos";
+    }
+
+    $("admin").hidden = !S.isAdmin;
+    $("perfiles").hidden = !canBrowse();
   }
 
   /* ---------- arranque ---------- */
@@ -661,34 +1257,28 @@ footer p{margin:0 0 8px}
     $("form").addEventListener("submit", save);
     $("f-photo").addEventListener("change", onPhoto);
     $("photo-remove").addEventListener("click", function () { S.photo = ""; S.dirty = true; updatePreview(); });
+    $("emp-form").addEventListener("input", function () { S.empDirty = true; });
+    $("emp-form").addEventListener("submit", saveEmp);
     $("flt-loc").addEventListener("change", renderDirectory);
     $("flt-task").addEventListener("change", renderDirectory);
     $("login").addEventListener("click", login);
     $("logout").addEventListener("click", logout);
+    $("cta-worker").addEventListener("click", function () { startAs("worker"); });
+    $("cta-employer").addEventListener("click", function () { startAs("employer"); });
+    $("pick-worker").addEventListener("click", function () { startAs("worker"); });
+    $("pick-employer").addEventListener("click", function () { startAs("employer"); });
+    $("worker-back").addEventListener("click", function () { setIntent("employer"); render(); });
+    $("emp-back").addEventListener("click", function () { setIntent("worker"); render(); });
     twoStep($("delete"), "Borrar mi perfil", "Confirmar: borrar mi perfil", function () {
-      return FB.deleteDoc(FB.doc(S.db, "profiles", S.uid)).then(function () {
-        S.mine = null;
+      return deleteWorker(S.uid).then(function () {
+        S.mine = null; S.contact = "";
         resetForm();
-        refreshControls();
+        render();
         setStatus("Tu perfil fue borrado.", "ok");
       });
-    });
+    }, $("status"));
     updatePreview();
-    renderDirectory();
-    refreshControls();
-  }
-
-  function onSnap(snap) {
-    S.loaded = true;
-    S.profiles = snap.docs.map(function (d) {
-      var raw = d.data({ serverTimestamps: "estimate" }) || {};
-      if (raw.updatedAt && typeof raw.updatedAt.toDate === "function") raw.updatedAt = raw.updatedAt.toDate().toISOString();
-      return clean(d.id, raw);
-    });
-    syncMine();
-    renderFilters();
-    renderDirectory();
-    refreshControls();
+    render();
   }
 
   function configured() {
@@ -697,7 +1287,7 @@ footer p{margin:0 0 8px}
 
   function start() {
     if (!configured()) {
-      setNotice("La página todavía no está conectada a la base de datos. Podés completar el formulario para ver cómo queda tu ficha, pero todavía no se puede publicar ni ver el listado.");
+      setNotice("La página todavía no está conectada a la base de datos.");
       return;
     }
     Promise.all([
@@ -710,24 +1300,10 @@ footer p{margin:0 0 8px}
       S.auth = FB.getAuth(app);
       S.auth.languageCode = "es";
       S.db = FB.getFirestore(app);
-      renderDirectory();
-      refreshControls();
+      render();
       FB.onAuthStateChanged(S.auth, onAuth);
-
-      var timer = setTimeout(function () {
-        if (!S.loaded) { $("empty").hidden = false; $("empty").textContent = "Todavía no se pudo cargar el listado. Puede estar desactualizado o sin conexión."; }
-      }, 10000);
-      var q = FB.query(FB.collection(S.db, "profiles"), FB.orderBy("updatedAt", "desc"), FB.limit(200));
-      FB.onSnapshot(q,
-        function (snap) { clearTimeout(timer); onSnap(snap); },
-        function () {
-          clearTimeout(timer);
-          $("empty").hidden = false;
-          $("empty").textContent = "No se pudo cargar el listado de perfiles.";
-        }
-      );
     }).catch(function () {
-      setNotice("No se pudo conectar con el servidor. Revisá tu conexión y recargá la página. Mientras tanto podés completar el formulario para ver cómo queda tu ficha.");
+      setNotice("No se pudo conectar con el servidor. Revisá tu conexión y recargá la página.");
     });
   }
 

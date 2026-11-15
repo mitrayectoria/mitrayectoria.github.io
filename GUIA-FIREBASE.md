@@ -107,3 +107,20 @@ Esto te permite quitar perfiles de otras personas, por ejemplo uno inapropiado.
 - **Costo**: el plan gratuito (Spark) de Firebase alcanza para miles de perfiles y visitas por día. No hace falta cargar tarjeta.
 - **WhatsApp, Instagram y Facebook**: si alguien abre el link desde adentro de esas apps, Google a veces bloquea el ingreso. La página avisa que la abran en Chrome.
 - **Privacidad**: la página publica nombre, localidad y foto. Antes de difundirla conviene sumar un texto corto de privacidad que explique qué datos se guardan y cómo pedir que se borren (Ley 25.326 de Protección de Datos Personales).
+
+---
+
+## Uso diario (administradora)
+
+Entrando a la página con tu cuenta, ves la sección **Administración**:
+
+- **Empleadores:** cada familia que se registra queda **En revisión**. Antes de aprobarla podés escribirle por WhatsApp con el botón **Escribirle**. Después tocá **Aprobar** o **Rechazar**. Recién cuando la aprobás puede ver los perfiles.
+- **Pedidos sin responder:** la página no le puede mandar avisos a la persona que busca trabajo. Si un pedido lleva días sin respuesta, usá **Avisarle por WhatsApp**: abre un mensaje ya escrito.
+
+Cómo funciona un pedido de entrevista:
+
+1. Un empleador aprobado toca **Pedir una entrevista** en un perfil y puede dejar un mensaje corto.
+2. La persona lo ve en **Pedidos de entrevista** la próxima vez que entra, y elige **Aceptar la entrevista** o **No, gracias**.
+3. Si acepta, cada uno ve el WhatsApp del otro. Si no acepta, el empleador ve "No disponible".
+
+> Cada vez que se cambia `firestore.rules` en el repositorio, hay que volver a pegarlo en Firebase (Firestore Database → Reglas → **Publicar**).
