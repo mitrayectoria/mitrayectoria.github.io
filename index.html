@@ -35,6 +35,7 @@
 }
 html{scroll-padding-top:env(safe-area-inset-top, 0px);scroll-behavior:smooth}
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:17px;line-height:1.6}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
@@ -61,6 +62,10 @@ section{padding:64px 0 24px}
 
 /* notice */
 .notice{background:var(--chip);border-radius:14px;padding:14px 18px;margin:0 0 24px;font-size:16px}
+
+/* cuenta */
+.account{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin:0 0 32px}
+.account p{margin:0;font-weight:500;overflow-wrap:anywhere;flex:1 1 260px}
 
 /* form */
 .field{margin:0 0 24px;border:0;padding:0;min-width:0}
@@ -140,6 +145,13 @@ footer p{margin:0 0 8px}
     <h2 class="sec-title" id="form-title">Publicá tu perfil</h2>
     <p class="sec-sub">Completá los datos básicos. A la derecha ves cómo va a quedar tu ficha.</p>
     <p class="notice" id="notice" hidden></p>
+    <div class="account" id="account" hidden>
+      <p id="acc-text"></p>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="login" hidden>Entrar con Google</button>
+        <button type="button" class="btn" id="logout" hidden>Salir</button>
+      </div>
+    </div>
 
     <div class="split">
       <form class="form-col" id="form" novalidate>
@@ -252,12 +264,27 @@ footer p{margin:0 0 8px}
 (function () {
   "use strict";
 
+  /* ===== CONFIGURACIÓN DE FIREBASE =====
+     Reemplazá cada "PEGAR_AQUI" con los datos de tu proyecto.
+     Están en la consola de Firebase → Configuración del proyecto → Tus apps.
+     Estos datos no son secretos: lo que protege la información son las reglas de seguridad (archivo firestore.rules). */
+  var FIREBASE_CONFIG = {
+    apiKey: "PEGAR_AQUI",
+    authDomain: "PEGAR_AQUI",
+    projectId: "PEGAR_AQUI",
+    storageBucket: "PEGAR_AQUI",
+    messagingSenderId: "PEGAR_AQUI",
+    appId: "PEGAR_AQUI"
+  };
+  var FIREBASE_SDK = "https://www.gstatic.com/firebasejs/10.12.2/";
+
   var TASKS = ["Limpieza y organización", "Cocina", "Planchado", "Cuidado de niños", "Cuidado de personas mayores", "Otras tareas"];
   var YEARS = { "lt1": "Menos de 1 año", "1-3": "Entre 1 y 3 años", "4-10": "Entre 4 y 10 años", "10+": "Más de 10 años" };
   var MODES = { "horas": "Por horas", "medio": "Medio día", "completa": "Jornada completa", "cualquiera": "Cualquier modalidad" };
 
   var $ = function (id) { return document.getElementById(id); };
-  var S = { db: null, uid: null, canWrite: null, isOwner: false, profiles: [], mine: null, photo: "", dirty: false, filled: false, loaded: false, busy: false };
+  var FB = null; /* funciones de Firebase, se cargan en start() */
+  var S = { db: null, auth: null, authReady: false, uid: null, userLabel: "", isOwner: false, profiles: [], mine: null, photo: "", dirty: false, filled: false, loaded: false, busy: false };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -342,7 +369,7 @@ footer p{margin:0 0 8px}
       var rm = el("button", "btn btn-danger", "Quitar este perfil");
       rm.type = "button";
       twoStep(rm, "Quitar este perfil", "Confirmar: quitar", function () {
-        return S.db.doc("profiles/" + p.id).delete();
+        return FB.deleteDoc(FB.doc(S.db, "profiles", p.id));
       });
       card.appendChild(rm);
     }
@@ -362,7 +389,7 @@ footer p{margin:0 0 8px}
       clearTimeout(timer);
       armed = false;
       btn.disabled = true;
-      Promise.resolve(action()).then(function () {
+      Promise.resolve().then(action).then(function () {
         btn.textContent = label;
         btn.disabled = false;
       }, function () {
@@ -404,6 +431,15 @@ footer p{margin:0 0 8px}
     updatePreview();
   }
 
+  function resetForm() {
+    $("form").reset();
+    S.photo = "";
+    S.dirty = false;
+    S.filled = false;
+    $("bio-count").textContent = "0";
+    updatePreview();
+  }
+
   function updatePreview() {
     var f = readForm();
     var box = $("preview");
@@ -436,13 +472,25 @@ footer p{margin:0 0 8px}
     n.hidden = !msg;
   }
 
-  function canPublish() { return !!(S.db && S.uid && S.canWrite !== false); }
+  function canPublish() { return !!(S.db && S.uid); }
+
+  function renderAccount() {
+    var box = $("account");
+    if (!S.auth) { box.hidden = true; return; }
+    box.hidden = false;
+    $("acc-text").textContent = S.uid
+      ? "Entraste como " + S.userLabel + "."
+      : (S.authReady ? "Para publicar tu perfil, entrá con tu cuenta de Google. Ver los perfiles no necesita cuenta." : "Revisando tu sesión…");
+    $("login").hidden = !S.authReady || !!S.uid;
+    $("logout").hidden = !S.uid;
+  }
 
   function refreshControls() {
     $("save").disabled = S.busy || !canPublish();
     $("delete").hidden = !(S.mine && canPublish());
     $("save").textContent = S.mine ? "Guardar cambios" : "Publicar mi perfil";
     $("form-title").textContent = S.mine ? "Editá tu perfil" : "Publicá tu perfil";
+    renderAccount();
   }
 
   function validate(f) {
@@ -465,18 +513,18 @@ footer p{margin:0 0 8px}
     S.busy = true;
     refreshControls();
     setStatus("Guardando…");
-    var data = { name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo, updatedAt: new Date().toISOString() };
-    var ref = S.db.doc("profiles/" + S.uid);
-    ref.set(data).catch(function (e) {
-      if (e && e.code === "unavailable") return wait(600 + Math.random() * 600).then(function () { return ref.set(data); });
+    var data = { name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo, updatedAt: FB.serverTimestamp() };
+    var ref = FB.doc(S.db, "profiles", S.uid);
+    FB.setDoc(ref, data).catch(function (e) {
+      if (e && e.code === "unavailable") return wait(600 + Math.random() * 600).then(function () { return FB.setDoc(ref, data); });
       throw e;
     }).then(function () {
       setStatus("Listo: tu perfil está publicado.", "ok");
       S.dirty = false;
     }, function (e) {
       var code = e && e.code;
-      if (code === "invalid_argument") setStatus("No tenés permiso para publicar desde esta cuenta. Pedí acceso de colaborador.", "err");
-      else if (code === "quota_exceeded") setStatus("Se llegó al límite de perfiles. Avisale a quien administra la página.", "err");
+      if (code === "permission-denied") setStatus("No se pudo guardar. Revisá los datos o salí y volvé a entrar con tu cuenta.", "err");
+      else if (code === "resource-exhausted") setStatus("Se llegó al límite de uso de la página. Avisale a quien la administra.", "err");
       else setStatus("No se pudo guardar. Probá de nuevo en un momento.", "err");
     }).then(function () {
       S.busy = false;
@@ -509,6 +557,49 @@ footer p{margin:0 0 8px}
     fr.readAsDataURL(file);
   }
 
+  /* ---------- cuenta de Google ---------- */
+  function login() {
+    setStatus("");
+    var provider = new FB.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    FB.signInWithPopup(S.auth, provider).catch(function (e) {
+      var c = e && e.code;
+      if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;
+      if (c === "auth/popup-blocked") setStatus("El navegador bloqueó la ventana para entrar. Permití las ventanas emergentes y probá de nuevo.", "err");
+      else if (c === "auth/unauthorized-domain") setStatus("Esta dirección todavía no está habilitada para entrar. Avisale a quien administra la página.", "err");
+      else if (c === "auth/network-request-failed") setStatus("No hay conexión. Probá de nuevo en un momento.", "err");
+      else setStatus("No se pudo entrar con Google. Si abriste la página desde WhatsApp, Instagram o Facebook, probá abrirla en Chrome.", "err");
+    });
+  }
+
+  function logout() {
+    FB.signOut(S.auth).catch(function () { setStatus("No se pudo salir. Probá de nuevo.", "err"); });
+  }
+
+  function syncMine() {
+    var mine = null;
+    if (S.uid) for (var i = 0; i < S.profiles.length; i++) if (S.profiles[i].id === S.uid) mine = S.profiles[i];
+    S.mine = mine;
+    if (mine && !S.filled && !S.dirty) { fillForm(mine); S.filled = true; }
+  }
+
+  function onAuth(user) {
+    var prev = S.uid;
+    S.authReady = true;
+    S.uid = user ? user.uid : null;
+    S.userLabel = user ? (user.email || user.displayName || "tu cuenta") : "";
+    S.isOwner = false;
+    if (prev && prev !== S.uid) { resetForm(); setStatus(""); }
+    syncMine();
+    renderDirectory();
+    refreshControls();
+    if (user) {
+      FB.getDoc(FB.doc(S.db, "admins", user.uid)).then(function (snap) {
+        if (S.uid === user.uid) { S.isOwner = snap.exists(); renderDirectory(); }
+      }, function () {});
+    }
+  }
+
   /* ---------- listado ---------- */
   function norm(s) { return s.trim().toLowerCase(); }
 
@@ -536,7 +627,7 @@ footer p{margin:0 0 8px}
     var grid = $("grid"), empty = $("empty");
     grid.textContent = "";
     items.forEach(function (p) {
-      grid.appendChild(buildCard(p, { mine: p.id === S.uid, owner: S.isOwner }));
+      grid.appendChild(buildCard(p, { mine: !!S.uid && p.id === S.uid, owner: S.isOwner }));
     });
     $("count").textContent = items.length ? (items.length === 1 ? "1 perfil" : items.length + " perfiles") : "";
     if (!items.length) {
@@ -572,13 +663,12 @@ footer p{margin:0 0 8px}
     $("photo-remove").addEventListener("click", function () { S.photo = ""; S.dirty = true; updatePreview(); });
     $("flt-loc").addEventListener("change", renderDirectory);
     $("flt-task").addEventListener("change", renderDirectory);
+    $("login").addEventListener("click", login);
+    $("logout").addEventListener("click", logout);
     twoStep($("delete"), "Borrar mi perfil", "Confirmar: borrar mi perfil", function () {
-      return S.db.doc("profiles/" + S.uid).delete().then(function () {
-        S.mine = null; S.filled = false; S.dirty = false;
-        $("form").reset();
-        S.photo = "";
-        $("bio-count").textContent = "0";
-        updatePreview();
+      return FB.deleteDoc(FB.doc(S.db, "profiles", S.uid)).then(function () {
+        S.mine = null;
+        resetForm();
         refreshControls();
         setStatus("Tu perfil fue borrado.", "ok");
       });
@@ -590,50 +680,45 @@ footer p{margin:0 0 8px}
 
   function onSnap(snap) {
     S.loaded = true;
-    S.profiles = snap.docs.map(function (d) { return clean(d.id, d.data()); });
-    var mine = null;
-    for (var i = 0; i < S.profiles.length; i++) if (S.profiles[i].id === S.uid) mine = S.profiles[i];
-    S.mine = mine;
-    if (mine && !S.filled && !S.dirty) { fillForm(mine); S.filled = true; }
+    S.profiles = snap.docs.map(function (d) {
+      var raw = d.data({ serverTimestamps: "estimate" }) || {};
+      if (raw.updatedAt && typeof raw.updatedAt.toDate === "function") raw.updatedAt = raw.updatedAt.toDate().toISOString();
+      return clean(d.id, raw);
+    });
+    syncMine();
     renderFilters();
     renderDirectory();
     refreshControls();
   }
 
+  function configured() {
+    return Object.keys(FIREBASE_CONFIG).every(function (k) { return FIREBASE_CONFIG[k] && FIREBASE_CONFIG[k] !== "PEGAR_AQUI"; });
+  }
+
   function start() {
-    var c = window.claude;
-    if (!c || typeof c.use !== "function") {
-      setNotice("Podés completar el formulario para ver cómo queda tu ficha, pero en esta vista no se puede publicar ni ver el listado.");
+    if (!configured()) {
+      setNotice("La página todavía no está conectada a la base de datos. Podés completar el formulario para ver cómo queda tu ficha, pero todavía no se puede publicar ni ver el listado.");
       return;
     }
     Promise.all([
-      Promise.resolve(c.use("user")).catch(function () { return null; }),
-      Promise.resolve(c.use("db")).catch(function () { return null; })
-    ]).then(function (r) {
-      var user = r[0];
-      S.db = r[1];
-      var steps = [];
-      if (user) {
-        steps.push(Promise.resolve(user.id()).then(function (v) { S.uid = v || null; }, function () {}));
-        steps.push(Promise.resolve(user.can("data.write")).then(function (v) { S.canWrite = v; }, function () {}));
-        try { S.isOwner = !!user.isOwner(); } catch (e) {}
-      }
-      return Promise.all(steps);
-    }).then(function () {
-      if (!S.db) {
-        setNotice("Para ver los perfiles y publicar el tuyo, abrí esta página con tu cuenta de Claude. Mientras tanto podés completar el formulario para ver cómo queda tu ficha.");
-        renderDirectory();
-        refreshControls();
-        return;
-      }
-      if (!canPublish()) {
-        setNotice("Con esta cuenta se pueden ver los perfiles, pero no publicar. Pedí acceso de colaborador a quien administra la página.");
-      }
+      import(FIREBASE_SDK + "firebase-app.js"),
+      import(FIREBASE_SDK + "firebase-auth.js"),
+      import(FIREBASE_SDK + "firebase-firestore.js")
+    ]).then(function (m) {
+      FB = Object.assign({}, m[0], m[1], m[2]);
+      var app = FB.initializeApp(FIREBASE_CONFIG);
+      S.auth = FB.getAuth(app);
+      S.auth.languageCode = "es";
+      S.db = FB.getFirestore(app);
+      renderDirectory();
       refreshControls();
+      FB.onAuthStateChanged(S.auth, onAuth);
+
       var timer = setTimeout(function () {
         if (!S.loaded) { $("empty").hidden = false; $("empty").textContent = "Todavía no se pudo cargar el listado. Puede estar desactualizado o sin conexión."; }
       }, 10000);
-      S.db.collection("profiles").orderBy("updatedAt", "desc").limit(200).onSnapshot(
+      var q = FB.query(FB.collection(S.db, "profiles"), FB.orderBy("updatedAt", "desc"), FB.limit(200));
+      FB.onSnapshot(q,
         function (snap) { clearTimeout(timer); onSnap(snap); },
         function () {
           clearTimeout(timer);
@@ -641,6 +726,8 @@ footer p{margin:0 0 8px}
           $("empty").textContent = "No se pudo cargar el listado de perfiles.";
         }
       );
+    }).catch(function () {
+      setNotice("No se pudo conectar con el servidor. Revisá tu conexión y recargá la página. Mientras tanto podés completar el formulario para ver cómo queda tu ficha.");
     });
   }
 
