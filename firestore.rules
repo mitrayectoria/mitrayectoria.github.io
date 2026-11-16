@@ -13,10 +13,21 @@ service cloud.firestore {
       return request.auth.uid;
     }
 
+    // Cuenta con el correo confirmado. Las cuentas de Google ya vienen confirmadas;
+    // las de correo y contraseña, después de tocar el link del mail.
+    function verified() {
+      return signedIn() && request.auth.token.email_verified == true;
+    }
+
     // La administradora es quien tiene un documento con su UID en la colección "admins".
     // Ese documento se crea a mano desde la consola de Firebase.
     function isAdmin() {
       return signedIn() && exists(/databases/$(database)/documents/admins/$(me()));
+    }
+
+    // Cuentas bloqueadas por la administradora: no pueden publicar ni mandar pedidos.
+    function notBlocked() {
+      return !exists(/databases/$(database)/documents/blocked/$(me()));
     }
 
     function employerPath(uid) {
@@ -31,19 +42,21 @@ service cloud.firestore {
       return /databases/$(database)/documents/requests/$(employerId + '_' + workerId);
     }
 
-    function isApprovedEmployer() {
-      return signedIn() && exists(employerPath(me())) && get(employerPath(me())).data.status == 'approved';
-    }
-
-    // ¿La trabajadora aceptó el pedido de entrevista de este empleador?
+    // ¿La persona aceptó el pedido de entrevista de esta familia?
     function accepted(employerId, workerId) {
       return exists(requestPath(employerId, workerId))
         && get(requestPath(employerId, workerId)).data.status == 'accepted';
     }
 
     // WhatsApp argentino: 10 números (código de área + número, sin 0 ni 15).
-    function validPhone(p) {
-      return p is string && p.matches('^[0-9]{10}$');
+    function validContact(d) {
+      return d.keys().hasOnly(['whatsapp'])
+        && d.whatsapp is string && d.whatsapp.matches('^[0-9]{10}$');
+    }
+
+    function validTasks(t) {
+      return t is list && t.size() >= 1 && t.size() <= 6
+        && t.toSet().hasOnly(['Limpieza y organización', 'Cocina', 'Planchado', 'Cuidado de niños', 'Cuidado de personas mayores', 'Otras tareas']);
     }
 
     function validProfile(d) {
@@ -53,8 +66,7 @@ service cloud.firestore {
         && d.locality is string && d.locality.size() >= 1 && d.locality.size() <= 60
         && d.years in ['lt1', '1-3', '4-10', '10+']
         && d.bio is string && d.bio.size() <= 400
-        && d.tasks is list && d.tasks.size() >= 1 && d.tasks.size() <= 6
-        && d.tasks.toSet().hasOnly(['Limpieza y organización', 'Cocina', 'Planchado', 'Cuidado de niños', 'Cuidado de personas mayores', 'Otras tareas'])
+        && validTasks(d.tasks)
         && d.mode in ['', 'con-retiro', 'sin-retiro', 'horas']
         && d.photo is string && d.photo.size() < 150000
         && (d.photo == '' || d.photo.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))
@@ -62,67 +74,60 @@ service cloud.firestore {
     }
 
     function validEmployer(d) {
-      return d.keys().hasOnly(['name', 'locality', 'whatsapp', 'status', 'createdAt'])
-        && d.keys().hasAll(['name', 'locality', 'whatsapp', 'status', 'createdAt'])
+      return d.keys().hasOnly(['name', 'locality', 'tasks', 'about', 'updatedAt'])
+        && d.keys().hasAll(['name', 'locality', 'tasks', 'about', 'updatedAt'])
         && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
         && d.locality is string && d.locality.size() >= 1 && d.locality.size() <= 60
-        && validPhone(d.whatsapp)
-        && d.status in ['pending', 'approved', 'rejected']
-        && d.createdAt is timestamp;
+        && validTasks(d.tasks)
+        && d.about is string && d.about.size() <= 400
+        && d.updatedAt == request.time;
     }
 
     // ---------- Perfiles de quienes buscan trabajo ----------
-    // Los ven: la propia persona, la administradora y los empleadores aprobados.
+    // Los ve cualquiera que haya entrado con una cuenta confirmada.
     match /profiles/{uid} {
-      allow read: if signedIn() && (me() == uid || isAdmin() || isApprovedEmployer());
-      allow create: if signedIn() && me() == uid
+      allow read: if verified();
+      allow create: if verified() && me() == uid && notBlocked()
         && !exists(employerPath(uid))
         && validProfile(request.resource.data);
-      allow update: if signedIn() && me() == uid && validProfile(request.resource.data);
+      allow update: if verified() && me() == uid && notBlocked() && validProfile(request.resource.data);
       allow delete: if signedIn() && (me() == uid || isAdmin());
 
       // WhatsApp privado: lo ve la persona, la administradora,
-      // y el empleador cuyo pedido de entrevista fue aceptado.
+      // y la familia cuyo pedido de entrevista fue aceptado.
       match /private/{docId} {
         allow read: if signedIn() && (me() == uid || isAdmin() || accepted(me(), uid));
-        allow create, update: if signedIn() && me() == uid
-          && docId == 'contact'
-          && request.resource.data.keys().hasOnly(['whatsapp'])
-          && validPhone(request.resource.data.whatsapp);
+        allow create, update: if verified() && me() == uid && notBlocked()
+          && docId == 'contact' && validContact(request.resource.data);
         allow delete: if signedIn() && (me() == uid || isAdmin());
       }
     }
 
-    // ---------- Empleadores ----------
-    // Se registran solos, quedan "en revisión" y solo la administradora los aprueba.
+    // ---------- Perfiles de familias (quienes buscan a alguien) ----------
     match /employers/{uid} {
-      allow read: if signedIn() && (me() == uid || isAdmin() || accepted(uid, me()));
-      allow create: if signedIn() && me() == uid
+      allow read: if verified();
+      allow create: if verified() && me() == uid && notBlocked()
         && !exists(profilePath(uid))
-        && validEmployer(request.resource.data)
-        && request.resource.data.status == 'pending'
-        && request.resource.data.createdAt == request.time;
-      // El empleador puede corregir sus datos mientras está en revisión.
-      // La administradora solo cambia el estado.
-      allow update: if signedIn() && (
-        (me() == uid
-          && resource.data.status == 'pending'
-          && validEmployer(request.resource.data)
-          && request.resource.data.status == resource.data.status
-          && request.resource.data.createdAt == resource.data.createdAt)
-        || (isAdmin()
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
-          && request.resource.data.status in ['pending', 'approved', 'rejected'])
-      );
-      allow delete: if isAdmin();
+        && validEmployer(request.resource.data);
+      allow update: if verified() && me() == uid && notBlocked() && validEmployer(request.resource.data);
+      allow delete: if signedIn() && (me() == uid || isAdmin());
+
+      // WhatsApp privado de la familia: lo ve la persona que aceptó su pedido.
+      match /private/{docId} {
+        allow read: if signedIn() && (me() == uid || isAdmin() || accepted(uid, me()));
+        allow create, update: if verified() && me() == uid && notBlocked()
+          && docId == 'contact' && validContact(request.resource.data);
+        allow delete: if signedIn() && (me() == uid || isAdmin());
+      }
     }
 
     // ---------- Pedidos de entrevista ----------
-    // El ID es "<empleador>_<trabajadora>": un solo pedido por pareja.
+    // El ID es "<familia>_<persona>": un solo pedido por pareja.
     match /requests/{rid} {
       allow read: if signedIn() && (resource.data.employerId == me() || resource.data.workerId == me() || isAdmin());
 
-      allow create: if isApprovedEmployer()
+      allow create: if verified() && notBlocked()
+        && exists(employerPath(me()))
         && rid == me() + '_' + request.resource.data.workerId
         && request.resource.data.keys().hasOnly(['employerId', 'workerId', 'employerName', 'employerLocality', 'workerName', 'message', 'status', 'createdAt', 'updatedAt'])
         && request.resource.data.keys().hasAll(['employerId', 'workerId', 'employerName', 'employerLocality', 'workerName', 'message', 'status', 'createdAt', 'updatedAt'])
@@ -137,16 +142,22 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
 
-      // Solo la trabajadora responde, una sola vez: acepta o no acepta.
-      allow update: if signedIn()
+      // Solo la persona que recibe el pedido responde, una sola vez: acepta o no acepta.
+      allow update: if verified()
         && resource.data.workerId == me()
         && resource.data.status == 'pending'
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
         && request.resource.data.status in ['accepted', 'rejected']
         && request.resource.data.updatedAt == request.time;
 
-      // El empleador puede cancelar un pedido que todavía no fue respondido.
+      // La familia puede cancelar un pedido que todavía no fue respondido.
       allow delete: if signedIn() && (isAdmin() || (resource.data.employerId == me() && resource.data.status == 'pending'));
+    }
+
+    // ---------- Bloqueos (solo la administradora) ----------
+    match /blocked/{uid} {
+      allow read: if signedIn() && (me() == uid || isAdmin());
+      allow write: if isAdmin();
     }
 
     // Cada persona solo puede consultar si ella misma es administradora. Nadie puede escribir desde la página.
