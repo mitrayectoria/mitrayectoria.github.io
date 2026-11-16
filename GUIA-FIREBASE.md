@@ -38,11 +38,12 @@ Mientras falten estos pasos, la página muestra el aviso: *"La página todavía 
 
 > Estos datos **no son secretos**: cualquier página con Firebase los muestra. Lo que protege la información son las reglas del paso 5.
 
-## 3. Activar el ingreso con Google
+## 3. Activar las formas de entrar
 
 1. Menú de la izquierda → **Compilación** → **Authentication** → **Comenzar**.
-2. Pestaña **Método de acceso** → **Google** → activar.
-3. Elegí tu email como "correo de asistencia" → **Guardar**.
+2. Pestaña **Método de acceso** → **Google** → activar → elegí tu email como "correo de asistencia" → **Guardar**.
+3. En la misma pestaña, **Agregar proveedor nuevo** → **Correo electrónico/contraseña** → activá solo el primer interruptor (**Correo electrónico/contraseña**; el de "vínculo de correo electrónico" dejalo apagado) → **Guardar**.
+4. Opcional: en la pestaña **Plantillas**, podés revisar los mails que reciben las personas (confirmar correo y cambiar contraseña). La página los pide en español.
 
 ## 4. Crear la base de datos
 
@@ -112,15 +113,17 @@ Esto te permite quitar perfiles de otras personas, por ejemplo uno inapropiado.
 
 ## Uso diario (administradora)
 
-Entrando a la página con tu cuenta, ves la sección **Administración**:
+Cómo funciona la página:
 
-- **Empleadores:** cada familia que se registra queda **En revisión**. Antes de aprobarla podés escribirle por WhatsApp con el botón **Escribirle**. Después tocá **Aprobar** o **Rechazar**. Recién cuando la aprobás puede ver los perfiles.
-- **Pedidos sin responder:** la página no le puede mandar avisos a la persona que busca trabajo. Si un pedido lleva días sin respuesta, usá **Avisarle por WhatsApp**: abre un mensaje ya escrito.
+- Para ver perfiles hay que **entrar con una cuenta**: Google, o cualquier correo con contraseña. Las cuentas de correo tienen que confirmar el mail antes de poder ver o publicar nada.
+- Cada cuenta elige una opción: **busco trabajo** (publica su perfil) o **busco a alguien para mi casa** (carga un perfil corto de su familia).
+- Las familias tocan **Pedir una entrevista** en un perfil y pueden dejar un mensaje. La persona ve el pedido la próxima vez que entra, junto con los datos de la familia, y elige **Aceptar la entrevista** o **No, gracias**. Si acepta, cada una ve el WhatsApp de la otra.
+- Los WhatsApp **nunca se publican**: solo se pasan cuando alguien acepta una entrevista.
 
-Cómo funciona un pedido de entrevista:
+Entrando con tu cuenta, ves la sección **Administración**:
 
-1. Un empleador aprobado toca **Pedir una entrevista** en un perfil y puede dejar un mensaje corto.
-2. La persona lo ve en **Pedidos de entrevista** la próxima vez que entra, y elige **Aceptar la entrevista** o **No, gracias**.
-3. Si acepta, cada uno ve el WhatsApp del otro. Si no acepta, el empleador ve "No disponible".
+- **Pedidos sin responder:** la página no le puede mandar avisos a la persona. Si un pedido lleva días sin respuesta, usá **Avisarle por WhatsApp**: abre un mensaje ya escrito.
+- **Familias registradas:** podés escribirles, **bloquearlas** (pueden ver, pero no mandar pedidos ni cambiar sus datos) o **quitarlas**.
+- En los **perfiles** también tenés **Quitar perfil** y **Bloquear**.
 
 > Cada vez que se cambia `firestore.rules` en el repositorio, hay que volver a pegarlo en Firebase (Firestore Database → Reglas → **Publicar**).
