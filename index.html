@@ -1685,6 +1685,17 @@ section.tab{padding-top:40px}
       return;
     }
     render();
+
+    /* Si el correo se confirmó en otra pestaña, la credencial guardada puede seguir diciendo
+       "sin confirmar" y Firebase rechazaría todo. Se renueva antes de empezar. */
+    user.getIdTokenResult().then(function (t) {
+      if (t.claims.email_verified !== true) return user.getIdToken(true);
+    }).catch(function () {}).then(function () {
+      if (S.uid === uid) startUser(uid);
+    });
+  }
+
+  function startUser(uid) {
     ensureDirectory();
 
     unsubs.push(FB.onSnapshot(FB.doc(S.db, "profiles", uid), function (s) {
