@@ -165,14 +165,56 @@ textarea{min-height:120px;resize:vertical}
 
 footer{padding:56px 0 64px;color:var(--muted);font-size:14px}
 footer p{margin:0 0 8px}
+
+/* barra superior y menú de secciones */
+.nav-link{color:inherit;font:inherit;font-size:16px;font-weight:600;background:none;border:0;padding:0 4px;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.appbar{background:var(--hero-bg);color:var(--hero-ink)}
+.appbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;min-height:64px;flex-wrap:wrap}
+.appbar .brand{font-size:20px}
+.appbar-actions{display:flex;gap:4px 16px;align-items:center;flex-wrap:wrap}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(0,0,0,.06);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar button{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;padding:8px 2px;background:none;border:0;border-top:3px solid transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.tabbar button[aria-current="page"]{color:var(--ink);border-top-color:var(--accent);background:var(--chip)}
+.tabbar svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.count-badge{position:absolute;top:6px;left:calc(50% + 8px);min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#B42318;color:#fff;font-size:13px;line-height:22px;text-align:center}
+body.has-tabbar{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body.has-tabbar footer{padding-bottom:24px}
+@media (min-width:760px){
+  .tabbar{position:sticky;top:0;bottom:auto;justify-content:center;gap:4px;border-top:0;border-bottom:1px solid var(--line);box-shadow:none;padding:0}
+  .tabbar button{flex:0 0 auto;flex-direction:row;gap:8px;font-size:16px;min-height:56px;padding:0 20px;border-top:0;border-bottom:3px solid transparent}
+  .tabbar button[aria-current="page"]{border-bottom-color:var(--accent)}
+  .tabbar svg{width:22px;height:22px}
+  .count-badge{position:static}
+  body.has-tabbar{padding-bottom:0}
+}
+
+/* pasos del formulario */
+.stepper{display:flex;gap:8px;margin:8px 0 8px;max-width:560px}
+.stepper .dot{flex:1;height:10px;border-radius:5px;border:0;padding:0;background:var(--line);cursor:pointer}
+.stepper .dot.done{background:var(--line-strong)}
+.stepper .dot.on{background:var(--accent)}
+.stepper .dot:disabled{cursor:default}
+.step-label{font-weight:600;color:var(--muted);margin:0 0 24px}
+.preview-box{margin:8px 0 16px;max-width:420px}
+.wizard-actions{margin-top:16px}
+.mini-steps{max-width:560px;margin:0 0 32px}
+.mini-steps ol{margin:0 0 8px;padding-left:22px;font-weight:500}
+.mini-steps a{font-size:15px}
+.howto li{margin-bottom:10px}
+.row-title{font-size:18px}
+.spaced-top{margin-top:20px}
+.who-am-i{margin:-32px 0 24px}
+section.tab{padding-top:40px}
 </style>
 
 <body>
 
-<header class="hero">
+<!-- Portada (sin sesión) -->
+<header class="hero" id="hero">
   <div class="wrap">
     <nav class="nav" aria-label="Principal">
       <a class="brand" href="#top">Mi Trayectoria</a>
+      <a class="nav-link" href="#como">¿Cómo funciona?</a>
     </nav>
     <h1 id="top">Tu trabajo habla por vos.</h1>
     <p>Un lugar para que quienes trabajan en casas de familia muestren su experiencia, y para que las familias encuentren a la persona indicada.</p>
@@ -183,20 +225,46 @@ footer p{margin:0 0 8px}
   </div>
 </header>
 
+<!-- Barra superior (con sesión) -->
+<header class="appbar" id="appbar" hidden>
+  <div class="wrap">
+    <a class="brand" href="#perfil" id="brand-app">Mi Trayectoria</a>
+    <div class="appbar-actions">
+      <a class="nav-link" href="#ayuda">¿Cómo funciona?</a>
+      <button type="button" class="nav-link" id="logout">Salir</button>
+    </div>
+  </div>
+</header>
+
+<!-- Menú de secciones (con sesión) -->
+<nav class="tabbar" id="tabbar" aria-label="Secciones" hidden>
+  <button type="button" data-tab="perfil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+    <span>Tu perfil</span>
+  </button>
+  <button type="button" data-tab="perfiles">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><circle cx="17" cy="7.5" r="3"/><path d="M17.5 13.5c2.8.2 4.5 2 4.5 4.8"/></svg>
+    <span>Perfiles</span>
+  </button>
+  <button type="button" data-tab="pedidos">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+    <span>Pedidos</span>
+    <b class="count-badge" id="badge" hidden></b>
+  </button>
+  <button type="button" data-tab="admin" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+    <span>Admin</span>
+  </button>
+</nav>
+
 <main>
 <div class="wrap">
   <p class="notice" id="notice" hidden></p>
-  <div class="account" id="account" hidden>
-    <p id="acc-text"></p>
-    <div class="actions">
-      <button type="button" class="btn" id="logout">Salir</button>
-    </div>
-  </div>
-  <p class="notice alert" id="alert" hidden><span id="alert-text"></span> <a href="#pedidos">Ver pedidos</a></p>
+  <p class="notice" id="blocked-note" hidden>Tu cuenta fue bloqueada por quien administra la página: podés ver los perfiles, pero no publicar ni mandar pedidos. Si creés que es un error, escribinos a <a href="mailto:mitrayectoriaarg@gmail.com">mitrayectoriaarg@gmail.com</a>.</p>
   <p class="status" id="top-status" role="status" aria-live="polite"></p>
 </div>
 
-<!-- Entrar (sin sesión) -->
+<!-- ========== SIN SESIÓN ========== -->
 <section id="entrar" hidden>
   <div class="wrap">
     <h2 class="sec-title" id="login-title">Entrá para seguir</h2>
@@ -212,7 +280,7 @@ footer p{margin:0 0 8px}
         <div class="field">
           <label for="l-pass">Contraseña</label>
           <input type="password" id="l-pass" maxlength="100" autocomplete="current-password">
-          <span class="hint" id="l-pass-hint">Si es tu primera vez, inventá una de al menos 6 caracteres.</span>
+          <span class="hint">Si es tu primera vez, inventá una de al menos 6 caracteres.</span>
         </div>
         <div class="actions">
           <button type="submit" class="btn btn-primary" id="l-enter">Entrar</button>
@@ -226,6 +294,41 @@ footer p{margin:0 0 8px}
   </div>
 </section>
 
+<!-- ¿Cómo funciona? (portada y sección "ayuda") -->
+<section id="como" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">¿Cómo funciona?</h2>
+    <p class="sec-sub">Es gratis para todos. Estos son los pasos, uno por uno.</p>
+    <div class="steps">
+      <div class="panel howto">
+        <h3>Si buscás trabajo</h3>
+        <ol>
+          <li><b>Entrá</b> con tu cuenta de Google o con tu correo.</li>
+          <li>Elegí <b>"Busco trabajo"</b>.</li>
+          <li><b>Armá tu perfil en 4 pasos:</b> tus datos, tu foto, el trabajo que buscás y tu WhatsApp. Tu WhatsApp no se publica.</li>
+          <li>Tocá <b>"Publicar mi perfil"</b>. Desde ese momento las familias registradas pueden verlo.</li>
+          <li><b>Entrá a la página cada tanto.</b> Si una familia te pidió una entrevista, vas a ver un número en <b>"Pedidos"</b>.</li>
+          <li>Leé qué ayuda busca la familia y su mensaje. Tocá <b>"Aceptar la entrevista"</b> o <b>"No, gracias"</b>.</li>
+          <li>Si aceptás, vas a ver su WhatsApp y ella el tuyo. <b>Escribile para coordinar</b> el día y la hora.</li>
+        </ol>
+      </div>
+      <div class="panel howto">
+        <h3>Si buscás a alguien para tu casa</h3>
+        <ol>
+          <li><b>Entrá</b> con tu cuenta de Google o con tu correo.</li>
+          <li>Elegí <b>"Busco a alguien para mi casa"</b>.</li>
+          <li><b>Contá sobre tu familia:</b> localidad, qué ayuda buscás y tu WhatsApp. Tu WhatsApp no se publica.</li>
+          <li>En <b>"Perfiles"</b>, filtrá por localidad o tipo de trabajo y mirá las fichas.</li>
+          <li>Si alguien te interesa, tocá <b>"Pedir una entrevista"</b> y dejá un mensaje corto con días y horarios.</li>
+          <li>En <b>"Pedidos"</b> vas a ver si la persona aceptó. Puede tardar unos días, porque se entera cuando entra a la página.</li>
+          <li>Si acepta, vas a ver su WhatsApp. <b>Escribile para coordinar</b> la entrevista.</li>
+        </ol>
+      </div>
+    </div>
+    <p class="small spaced-top">Mi Trayectoria no es una agencia: no cobra ni interviene en el acuerdo de trabajo. <a href="privacidad.html">Cómo cuidamos tus datos</a>.</p>
+  </div>
+</section>
+
 <!-- Confirmar correo -->
 <section id="verificar" hidden>
   <div class="wrap">
@@ -234,217 +337,217 @@ footer p{margin:0 0 8px}
     <div class="actions">
       <button type="button" class="btn btn-primary" id="v-done">Ya confirmé mi correo</button>
       <button type="button" class="btn" id="v-resend">Reenviar el mail</button>
+      <button type="button" class="btn" id="v-out">Salir</button>
     </div>
     <p class="hint">Si no lo encontrás, fijate en la carpeta de correo no deseado o spam.</p>
     <p class="status" id="v-status" role="status" aria-live="polite"></p>
   </div>
 </section>
 
-<!-- Cómo funciona (sin sesión) -->
-<section id="como" hidden>
+<!-- ========== SECCIÓN: TU PERFIL ========== -->
+<section id="tab-perfil" class="tab" hidden>
   <div class="wrap">
-    <h2 class="sec-title">¿Cómo funciona?</h2>
-    <p class="sec-sub">Es gratis. Entrás con tu cuenta de Google o con tu correo.</p>
-    <div class="steps">
-      <div class="panel">
-        <h3>Si buscás trabajo</h3>
-        <ol>
-          <li>Entrá y armá tu perfil con tu experiencia y el trabajo que buscás.</li>
-          <li>Las familias registradas ven tu perfil y te pueden mandar un pedido de entrevista.</li>
-          <li>Vos decidís si aceptás. Recién ahí se pasan los WhatsApp.</li>
-        </ol>
-        <p class="small">Tu WhatsApp no se publica. Solo lo ve la familia si vos aceptás la entrevista.</p>
-      </div>
-      <div class="panel">
-        <h3>Si buscás a alguien para tu casa</h3>
-        <ol>
-          <li>Entrá y contá brevemente sobre tu familia y qué ayuda buscás.</li>
-          <li>Mirá los perfiles y mandá un pedido de entrevista a quien te interese.</li>
-          <li>Si la persona acepta, se pasan los WhatsApp para coordinar.</li>
-        </ol>
+    <p class="small who-am-i" id="acc-text"></p>
+
+    <!-- Elegir opción -->
+    <div id="elegir" hidden>
+      <h2 class="sec-title">¿Qué estás buscando?</h2>
+      <p class="sec-sub">Elegí una opción para armar tu perfil. Cada cuenta se usa para una sola de las dos.</p>
+      <div class="choice">
+        <button type="button" id="pick-worker"><b>Busco trabajo</b><span>Quiero publicar mi perfil.</span></button>
+        <button type="button" id="pick-employer"><b>Busco a alguien para mi casa</b><span>Quiero pedir entrevistas.</span></button>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Bloqueo -->
-<div class="wrap"><p class="notice" id="blocked-note" hidden>Tu cuenta fue bloqueada por quien administra la página: podés ver los perfiles, pero no publicar ni mandar pedidos. Si creés que es un error, escribinos a <a href="mailto:mitrayectoriaarg@gmail.com">mitrayectoriaarg@gmail.com</a>.</p></div>
-
-<!-- Elegir opción -->
-<section id="elegir" hidden>
-  <div class="wrap">
-    <h2 class="sec-title">¿Qué estás buscando?</h2>
-    <p class="sec-sub">Elegí una opción para armar tu perfil. Cada cuenta se usa para una sola de las dos.</p>
-    <div class="choice">
-      <button type="button" id="pick-worker"><b>Busco trabajo</b><span>Quiero publicar mi perfil.</span></button>
-      <button type="button" id="pick-employer"><b>Busco a alguien para mi casa</b><span>Quiero pedir entrevistas.</span></button>
+    <!-- Resumen corto la primera vez -->
+    <div class="panel mini-steps" id="mini-worker" hidden>
+      <p class="prev-label">Así funciona</p>
+      <ol>
+        <li>Armás tu perfil.</li>
+        <li>Las familias lo ven y te piden una entrevista.</li>
+        <li>Si aceptás, se pasan los WhatsApp.</li>
+      </ol>
+      <a href="#ayuda">Ver todos los pasos</a>
     </div>
-  </div>
-</section>
+    <div class="panel mini-steps" id="mini-employer" hidden>
+      <p class="prev-label">Así funciona</p>
+      <ol>
+        <li>Contás sobre tu familia.</li>
+        <li>Mirás perfiles y pedís una entrevista.</li>
+        <li>Si la persona acepta, se pasan los WhatsApp.</li>
+      </ol>
+      <a href="#ayuda">Ver todos los pasos</a>
+    </div>
 
-<!-- Persona: pedidos -->
-<section id="pedidos" hidden>
-  <div class="wrap">
-    <h2 class="sec-title">Pedidos de entrevista</h2>
-    <p class="sec-sub">Cuando una familia quiera entrevistarte, aparece acá. Si aceptás, le pasamos tu WhatsApp y vos ves el suyo.</p>
-    <div class="list" id="inbox"></div>
-  </div>
-</section>
+    <!-- Persona: ficha publicada -->
+    <div id="w-view" hidden>
+      <h2 class="sec-title">Tu perfil</h2>
+      <p class="sec-sub">Así ven tu ficha las familias. Tu WhatsApp no aparece: solo lo ve una familia si aceptás su pedido.</p>
+      <div class="prev-col" id="w-card"></div>
+      <div class="actions spaced-top">
+        <button type="button" class="btn btn-primary" id="w-edit">Editar mi perfil</button>
+        <button type="button" class="btn btn-danger" id="delete">Borrar mi perfil</button>
+      </div>
+      <p class="status" id="w-view-status" role="status" aria-live="polite"></p>
+    </div>
 
-<!-- Persona: perfil -->
-<section id="publicar" hidden>
-  <div class="wrap">
-    <h2 class="sec-title" id="form-title">Publicá tu perfil</h2>
-    <p class="sec-sub">Completá los datos básicos. Mientras escribís, vas a ver cómo queda tu ficha.</p>
+    <!-- Persona: formulario en pasos -->
+    <div id="w-form" hidden>
+      <h2 class="sec-title" id="form-title">Armá tu perfil</h2>
+      <div class="stepper" id="stepper"></div>
+      <p class="step-label" id="step-label"></p>
 
-    <div class="split">
-      <form class="form-col" id="form" novalidate>
-        <div class="field">
-          <label for="f-name">Nombre o apodo</label>
-          <input type="text" id="f-name" maxlength="60" autocomplete="given-name">
-        </div>
-
-        <fieldset class="field">
-          <legend>Foto (opcional)</legend>
-          <div class="photo-row">
-            <div id="photo-thumb"></div>
-            <div class="photo-actions">
-              <span class="btn file-btn">Elegir foto<input type="file" id="f-photo" accept="image/*" aria-label="Elegir foto"></span>
-              <button type="button" class="btn" id="photo-remove" hidden>Quitar foto</button>
-            </div>
+      <form class="form-col narrow" id="form" novalidate>
+        <div class="step" data-step="1">
+          <div class="field">
+            <label for="f-name">Nombre o apodo</label>
+            <input type="text" id="f-name" maxlength="60" autocomplete="given-name">
           </div>
-          <span class="hint">Una foto de frente y con buena luz. Se recorta en cuadrado.</span>
-        </fieldset>
-
-        <div class="field">
-          <label for="f-loc">Localidad donde vivís</label>
-          <input type="text" id="f-loc" maxlength="60" placeholder="Por ejemplo: Pilar" autocomplete="off">
-          <span class="hint">Solo la localidad, nunca tu dirección.</span>
+          <div class="field">
+            <label for="f-loc">Localidad donde vivís</label>
+            <input type="text" id="f-loc" maxlength="60" placeholder="Por ejemplo: Pilar" autocomplete="off">
+            <span class="hint">Solo la localidad, nunca tu dirección.</span>
+          </div>
+          <div class="field">
+            <label for="f-years">Años de experiencia</label>
+            <select id="f-years">
+              <option value="">Elegí una opción</option>
+              <option value="lt1">Menos de 1 año</option>
+              <option value="1-3">Entre 1 y 3 años</option>
+              <option value="4-10">Entre 4 y 10 años</option>
+              <option value="10+">Más de 10 años</option>
+            </select>
+          </div>
         </div>
 
-        <div class="field">
-          <label for="f-years">Años de experiencia</label>
-          <select id="f-years">
-            <option value="">Elegí una opción</option>
-            <option value="lt1">Menos de 1 año</option>
-            <option value="1-3">Entre 1 y 3 años</option>
-            <option value="4-10">Entre 4 y 10 años</option>
-            <option value="10+">Más de 10 años</option>
-          </select>
+        <div class="step" data-step="2">
+          <fieldset class="field">
+            <legend>Tu foto (opcional)</legend>
+            <div class="photo-row">
+              <div id="photo-thumb"></div>
+              <div class="photo-actions">
+                <span class="btn file-btn">Elegir foto<input type="file" id="f-photo" accept="image/*" aria-label="Elegir foto"></span>
+                <button type="button" class="btn" id="photo-remove" hidden>Quitar foto</button>
+              </div>
+            </div>
+            <span class="hint">Una foto de frente y con buena luz. Se recorta en cuadrado. Si no querés poner foto, tocá "Siguiente".</span>
+          </fieldset>
         </div>
 
-        <div class="field">
-          <label for="f-bio">Tu experiencia (opcional)</label>
-          <textarea id="f-bio" maxlength="400" placeholder="Contá dónde trabajaste, qué hacías y qué sabés hacer bien."></textarea>
-          <span class="hint"><span id="bio-count">0</span> de 400 caracteres. No escribas teléfono, DNI ni dirección.</span>
+        <div class="step" data-step="3">
+          <fieldset class="field">
+            <legend>Trabajo que buscás</legend>
+            <div class="chips" id="f-tasks"></div>
+            <span class="hint">Podés elegir más de uno.</span>
+          </fieldset>
+          <div class="field">
+            <label for="f-mode">Modalidad que buscás</label>
+            <select id="f-mode">
+              <option value="">Elegí una opción</option>
+              <option value="con-retiro">Con retiro</option>
+              <option value="sin-retiro">Sin retiro</option>
+              <option value="horas">Por horas</option>
+            </select>
+            <span class="hint">Con retiro: volvés a tu casa al terminar el día. Sin retiro: vivís en la casa donde trabajás.</span>
+          </div>
+          <div class="field">
+            <label for="f-bio">Tu experiencia (opcional)</label>
+            <textarea id="f-bio" maxlength="400" placeholder="Contá dónde trabajaste, qué hacías y qué sabés hacer bien."></textarea>
+            <span class="hint"><span id="bio-count">0</span> de 400 caracteres. No escribas teléfono, DNI ni dirección.</span>
+          </div>
         </div>
 
-        <fieldset class="field">
-          <legend>Trabajo que buscás</legend>
-          <div class="chips" id="f-tasks"></div>
-          <span class="hint">Podés elegir más de uno.</span>
-        </fieldset>
-
-        <div class="field">
-          <label for="f-mode">Modalidad que buscás</label>
-          <select id="f-mode">
-            <option value="">Elegí una opción</option>
-            <option value="con-retiro">Con retiro</option>
-            <option value="sin-retiro">Sin retiro</option>
-            <option value="horas">Por horas</option>
-          </select>
-          <span class="hint">Con retiro: volvés a tu casa al terminar el día. Sin retiro: vivís en la casa donde trabajás.</span>
+        <div class="step" data-step="4">
+          <div class="field private">
+            <label for="f-wa">Tu WhatsApp (no se publica)</label>
+            <input type="tel" id="f-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
+            <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve una familia si vos aceptás su pedido de entrevista.</span>
+          </div>
+          <div class="check">
+            <input type="checkbox" id="f-consent">
+            <label for="f-consent">Acepto que las personas registradas en esta página vean mi perfil. Puedo editarlo o borrarlo cuando quiera. <a href="privacidad.html" target="_blank" rel="noopener">Cómo cuidamos tus datos</a>.</label>
+          </div>
         </div>
 
-        <div class="field private">
-          <label for="f-wa">Tu WhatsApp (no se publica)</label>
-          <input type="tel" id="f-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
-          <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve una familia si vos aceptás su pedido de entrevista.</span>
+        <div class="preview-box" id="preview-box" hidden>
+          <p class="prev-label">Así se va a ver tu ficha</p>
+          <div class="prev-col" id="preview"></div>
         </div>
+        <button type="button" class="linkbtn" id="toggle-preview">Ver cómo queda mi ficha</button>
 
-        <div class="check">
-          <input type="checkbox" id="f-consent">
-          <label for="f-consent">Acepto que las personas registradas en esta página vean mi perfil. Puedo editarlo o borrarlo cuando quiera. <a href="privacidad.html" target="_blank" rel="noopener">Cómo cuidamos tus datos</a>.</label>
-        </div>
-
-        <div class="actions">
+        <div class="actions wizard-actions">
+          <button type="button" class="btn" id="step-back">Atrás</button>
+          <button type="button" class="btn btn-primary" id="step-next">Siguiente</button>
           <button type="submit" class="btn btn-primary" id="save">Publicar mi perfil</button>
-          <button type="button" class="btn btn-danger" id="delete" hidden>Borrar mi perfil</button>
+          <button type="button" class="btn" id="edit-cancel" hidden>Cancelar</button>
         </div>
         <p class="status" id="status" role="status" aria-live="polite"></p>
         <button type="button" class="linkbtn" id="worker-back" hidden>Me equivoqué: busco a alguien para mi casa</button>
       </form>
+    </div>
 
-      <div class="prev-col">
-        <p class="prev-label">Así se ve tu ficha</p>
-        <div id="preview"></div>
+    <!-- Familia: datos guardados -->
+    <div id="f-view" hidden>
+      <h2 class="sec-title">Tu familia</h2>
+      <p class="sec-sub">Estos datos los ve la persona a la que le pedís una entrevista. Tu WhatsApp solo lo ve si acepta.</p>
+      <div class="panel narrow" id="f-card"></div>
+      <div class="actions spaced-top">
+        <button type="button" class="btn btn-primary" id="f-go">Ver perfiles</button>
+        <button type="button" class="btn" id="f-edit">Editar</button>
+        <button type="button" class="btn btn-danger" id="e-delete">Borrar mis datos</button>
       </div>
+      <p class="status" id="f-view-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <!-- Familia: formulario -->
+    <div id="f-form" hidden>
+      <h2 class="sec-title" id="fam-title">Contanos sobre tu familia</h2>
+      <p class="sec-sub">Con estos datos, la persona a la que le pidas una entrevista puede decidir si acepta.</p>
+      <form class="form-col narrow" id="fam-form" novalidate>
+        <div class="field">
+          <label for="e-name">Tu nombre</label>
+          <input type="text" id="e-name" maxlength="60" autocomplete="name" placeholder="Por ejemplo: Laura Gómez">
+        </div>
+        <div class="field">
+          <label for="e-loc">Localidad donde necesitás la ayuda</label>
+          <input type="text" id="e-loc" maxlength="60" placeholder="Por ejemplo: Pilar" autocomplete="off">
+          <span class="hint">Solo la localidad, nunca tu dirección.</span>
+        </div>
+        <fieldset class="field">
+          <legend>¿Qué ayuda buscás?</legend>
+          <div class="chips" id="e-tasks"></div>
+          <span class="hint">Podés elegir más de uno.</span>
+        </fieldset>
+        <div class="field">
+          <label for="e-about">Sobre tu familia y tu casa (opcional)</label>
+          <textarea id="e-about" maxlength="400" placeholder="Por ejemplo: cuántas personas viven, si hay chicos o mascotas, qué días y horarios necesitás."></textarea>
+          <span class="hint"><span id="about-count">0</span> de 400 caracteres.</span>
+        </div>
+        <div class="field private">
+          <label for="e-wa">Tu WhatsApp (no se publica)</label>
+          <input type="tel" id="e-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
+          <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve la persona que acepte tu pedido de entrevista.</span>
+        </div>
+        <div class="check">
+          <input type="checkbox" id="e-consent">
+          <label for="e-consent">Acepto que las personas registradas vean los datos de mi familia, y que quien acepte mi pedido de entrevista vea mi WhatsApp. <a href="privacidad.html" target="_blank" rel="noopener">Cómo cuidamos tus datos</a>.</label>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" id="e-save">Guardar</button>
+          <button type="button" class="btn" id="fam-cancel" hidden>Cancelar</button>
+        </div>
+        <p class="status" id="e-status" role="status" aria-live="polite"></p>
+        <button type="button" class="linkbtn" id="fam-back" hidden>Me equivoqué: busco trabajo</button>
+      </form>
     </div>
   </div>
 </section>
 
-<!-- Familia -->
-<section id="familia" hidden>
-  <div class="wrap">
-    <h2 class="sec-title" id="fam-title">Tu familia</h2>
-    <p class="sec-sub">Contá brevemente qué ayuda buscás. Las personas a las que les pidas una entrevista van a ver estos datos para decidir.</p>
-    <form class="form-col narrow" id="fam-form" novalidate>
-      <div class="field">
-        <label for="e-name">Tu nombre</label>
-        <input type="text" id="e-name" maxlength="60" autocomplete="name" placeholder="Por ejemplo: Laura Gómez">
-      </div>
-      <div class="field">
-        <label for="e-loc">Localidad donde necesitás la ayuda</label>
-        <input type="text" id="e-loc" maxlength="60" placeholder="Por ejemplo: Pilar" autocomplete="off">
-        <span class="hint">Solo la localidad, nunca tu dirección.</span>
-      </div>
-      <fieldset class="field">
-        <legend>¿Qué ayuda buscás?</legend>
-        <div class="chips" id="e-tasks"></div>
-        <span class="hint">Podés elegir más de uno.</span>
-      </fieldset>
-      <div class="field">
-        <label for="e-about">Sobre tu familia y tu casa (opcional)</label>
-        <textarea id="e-about" maxlength="400" placeholder="Por ejemplo: cuántas personas viven, si hay chicos o mascotas, qué días y horarios necesitás."></textarea>
-        <span class="hint"><span id="about-count">0</span> de 400 caracteres.</span>
-      </div>
-      <div class="field private">
-        <label for="e-wa">Tu WhatsApp (no se publica)</label>
-        <input type="tel" id="e-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
-        <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve la persona que acepte tu pedido de entrevista.</span>
-      </div>
-      <div class="check">
-        <input type="checkbox" id="e-consent">
-        <label for="e-consent">Acepto que las personas registradas vean los datos de mi familia, y que quien acepte mi pedido de entrevista vea mi WhatsApp. <a href="privacidad.html" target="_blank" rel="noopener">Cómo cuidamos tus datos</a>.</label>
-      </div>
-      <div class="actions">
-        <button type="submit" class="btn btn-primary" id="e-save">Guardar</button>
-        <button type="button" class="btn btn-danger" id="e-delete" hidden>Borrar mis datos</button>
-      </div>
-      <p class="status" id="e-status" role="status" aria-live="polite"></p>
-      <button type="button" class="linkbtn" id="fam-back" hidden>Me equivoqué: busco trabajo</button>
-    </form>
-  </div>
-</section>
-
-<!-- Administración -->
-<section id="admin" hidden>
-  <div class="wrap">
-    <h2 class="sec-title">Administración</h2>
-    <p class="sec-sub">Solo vos ves esta parte.</p>
-    <h3 class="sub-title">Pedidos sin responder</h3>
-    <p class="small spaced">La página no puede avisarle sola a la persona. Si un pedido lleva días sin respuesta, escribile por WhatsApp.</p>
-    <div class="list" id="adm-requests"></div>
-    <h3 class="sub-title">Familias registradas</h3>
-    <div class="list" id="adm-families"></div>
-  </div>
-</section>
-
-<!-- Perfiles -->
-<section id="perfiles" hidden>
+<!-- ========== SECCIÓN: PERFILES ========== -->
+<section id="tab-perfiles" class="tab" hidden>
   <div class="wrap">
     <h2 class="sec-title">Perfiles</h2>
-    <p class="sec-sub">Personas que buscan trabajo en casas de familia. Filtrá por localidad o por tipo de trabajo.</p>
+    <p class="sec-sub" id="perfiles-sub">Personas que buscan trabajo en casas de familia. Filtrá por localidad o por tipo de trabajo.</p>
     <div class="filters">
       <div class="field">
         <label for="flt-loc">Localidad</label>
@@ -460,9 +563,31 @@ footer p{margin:0 0 8px}
     <div class="empty" id="empty" hidden></div>
   </div>
 </section>
+
+<!-- ========== SECCIÓN: PEDIDOS ========== -->
+<section id="tab-pedidos" class="tab" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">Pedidos de entrevista</h2>
+    <p class="sec-sub" id="pedidos-sub"></p>
+    <div class="list" id="inbox"></div>
+  </div>
+</section>
+
+<!-- ========== SECCIÓN: ADMINISTRACIÓN ========== -->
+<section id="tab-admin" class="tab" hidden>
+  <div class="wrap">
+    <h2 class="sec-title">Administración</h2>
+    <p class="sec-sub">Solo vos ves esta parte. Para quitar o bloquear un perfil, buscalo en "Perfiles".</p>
+    <h3 class="sub-title">Pedidos sin responder</h3>
+    <p class="small spaced">La página no puede avisarle sola a la persona. Si un pedido lleva días sin respuesta, escribile por WhatsApp.</p>
+    <div class="list" id="adm-requests"></div>
+    <h3 class="sub-title">Familias registradas</h3>
+    <div class="list" id="adm-families"></div>
+  </div>
+</section>
 </main>
 
-<footer>
+<footer id="footer">
   <div class="wrap">
     <p><b>Mi Trayectoria</b> · Proyecto en etapa de validación.</p>
     <p>Mi Trayectoria no es una agencia. Los datos de cada perfil los carga la propia persona y no equivalen a una referencia confirmada ni a una garantía de idoneidad.</p>
@@ -491,6 +616,8 @@ footer p{margin:0 0 8px}
   var TASKS = ["Limpieza y organización", "Cocina", "Planchado", "Cuidado de niños", "Cuidado de personas mayores", "Otras tareas"];
   var YEARS = { "lt1": "Menos de 1 año", "1-3": "Entre 1 y 3 años", "4-10": "Entre 4 y 10 años", "10+": "Más de 10 años" };
   var MODES = { "con-retiro": "Con retiro", "sin-retiro": "Sin retiro", "horas": "Por horas" };
+  var STEPS = ["Tus datos", "Tu foto", "Tu trabajo", "Tu WhatsApp"];
+  var TABS = ["perfil", "perfiles", "pedidos", "admin", "ayuda"];
 
   var $ = function (id) { return document.getElementById(id); };
   var FB = null; /* funciones de Firebase, se cargan en start() */
@@ -506,11 +633,12 @@ footer p{margin:0 0 8px}
       sent: {}, inbox: [], allEmployers: [], allReqs: [], blockedIds: {},
       waCache: {}, famCache: {}, famWaCache: {},
       photo: "", dirty: false, filled: false, famDirty: false, famFilled: false, busy: false,
-      openReq: null, reqDraft: "", listening: {}
+      editing: false, famEditing: false, step: 1, showPreview: false,
+      openReq: null, reqDraft: "", listening: {}, tabChosen: false, inboxLoaded: false
     };
   }
   S = freshState();
-  S.db = null; S.auth = null; S.authReady = false; S.intent = readIntent();
+  S.db = null; S.auth = null; S.authReady = false; S.intent = readIntent(); S.tab = hashTab();
 
   /* ---------- utilidades ---------- */
   function el(tag, cls, text) {
@@ -554,6 +682,19 @@ footer p{margin:0 0 8px}
   function setIntent(v) {
     S.intent = v;
     try { if (v) sessionStorage.setItem("mt-intent", v); else sessionStorage.removeItem("mt-intent"); } catch (e) {}
+  }
+  function hashTab() {
+    var h = (location.hash || "").replace("#", "");
+    return TABS.indexOf(h) > -1 ? h : null;
+  }
+
+  /* Entrevistas aceptadas que la familia ya vio (solo en este navegador). */
+  function seenKey() { return "mt-seen-" + S.uid; }
+  function readSeen() { try { return JSON.parse(localStorage.getItem(seenKey()) || "{}") || {}; } catch (e) { return {}; } }
+  function markSeen(ids) {
+    var m = readSeen(), changed = false;
+    ids.forEach(function (id) { if (!m[id]) { m[id] = 1; changed = true; } });
+    if (changed) { try { localStorage.setItem(seenKey(), JSON.stringify(m)); } catch (e) {} }
   }
 
   function errMsg(e) {
@@ -656,10 +797,31 @@ footer p{margin:0 0 8px}
     return tags;
   }
 
+  /* ---------- navegación entre secciones ---------- */
+  function go(tab) {
+    if (location.hash === "#" + tab) { S.tab = tab; render(); window.scrollTo(0, 0); }
+    else location.hash = tab;
+  }
+  window.addEventListener("hashchange", function () {
+    var t = hashTab();
+    if (!t) return;
+    S.tab = t; S.tabChosen = true;
+    render();
+    if (t === "ayuda" && view() === "landing") { $("como").scrollIntoView(); return; }
+    window.scrollTo(0, 0);
+  });
+  function defaultTab() {
+    var v = view();
+    if (v === "worker" && S.mine && pendingCount() > 0) return "pedidos";
+    if (v === "employer" && S.employer) return "perfiles";
+    return "perfil";
+  }
+
   /* ---------- tarjeta de perfil ---------- */
   function buildCard(p, o) {
     o = o || {};
     var card = el("article", "card");
+    card.id = o.preview ? "" : "card-" + p.id;
     var top = el("div", "card-top");
     var av;
     if (p.photo) {
@@ -721,16 +883,15 @@ footer p{margin:0 0 8px}
     if (S.mine) return null; /* quien busca trabajo no manda pedidos */
     var box = el("div", "req");
     if (!S.employer) {
-      var go = el("button", "btn btn-primary", "Pedir una entrevista");
-      go.type = "button";
-      go.addEventListener("click", function () {
+      var go1 = el("button", "btn btn-primary", "Pedir una entrevista");
+      go1.type = "button";
+      go1.addEventListener("click", function () {
         setIntent("employer");
-        render();
+        go("perfil");
         setMsg($("e-status"), "Antes de pedir una entrevista, contá brevemente sobre tu familia.", "");
-        $("familia").scrollIntoView();
-        $("e-name").focus();
+        setTimeout(function () { $("e-name").focus(); }, 0);
       });
-      box.appendChild(go);
+      box.appendChild(go1);
       return box;
     }
     var r = S.sent[p.id];
@@ -779,30 +940,20 @@ footer p{margin:0 0 8px}
         });
         box.appendChild(b);
       }
-    } else if (r.status === "pending") {
-      box.appendChild(el("span", "pill warn", "Pedido enviado"));
-      box.appendChild(el("p", null, "Esperando su respuesta. Cuando acepte, vas a ver su WhatsApp acá."));
-      var c = el("button", "btn", "Cancelar pedido");
-      c.type = "button";
-      twoStep(c, "Cancelar pedido", "Confirmar: cancelar", function () { return FB.deleteDoc(FB.doc(S.db, "requests", r.id)); });
-      box.appendChild(c);
-    } else if (r.status === "accepted") {
-      box.appendChild(el("span", "pill ok", "Aceptó la entrevista"));
-      var wa = S.waCache[p.id];
-      if (wa) {
-        box.appendChild(el("p", null, "WhatsApp: " + wa));
-        box.appendChild(waAnchor(wa, "Escribirle por WhatsApp", "Hola " + p.name + ", soy " + S.employer.name + ". Vi tu perfil en Mi Trayectoria y me gustaría coordinar la entrevista."));
-      } else if (wa === "") {
-        box.appendChild(el("p", null, "Todavía no cargó su WhatsApp. Probá más tarde."));
-      } else {
-        box.appendChild(el("p", null, "Cargando su WhatsApp…"));
-        loadWorkerContact(p.id);
-      }
     } else {
-      box.appendChild(el("span", "pill", "No disponible"));
-      box.appendChild(el("p", null, "Por ahora no puede tomar la entrevista."));
+      box.appendChild(reqStatus(r));
+      var link = el("button", "linkbtn", "Ver en Pedidos");
+      link.type = "button";
+      link.addEventListener("click", function () { go("pedidos"); });
+      box.appendChild(link);
     }
     return box;
+  }
+
+  function reqStatus(r) {
+    if (r.status === "pending") return el("span", "pill warn", "Pedido enviado: esperando respuesta");
+    if (r.status === "accepted") return el("span", "pill ok", "Aceptó la entrevista");
+    return el("span", "pill", "No disponible");
   }
 
   function sendRequest(p, msg) {
@@ -819,9 +970,8 @@ footer p{margin:0 0 8px}
   function retryLater(key) {
     retries[key] = (retries[key] || 0) + 1;
     if (retries[key] > 5) return;
-    setTimeout(function () { renderInbox(); renderDirectory(); renderAdmin(); }, 1200 * retries[key]);
+    setTimeout(function () { renderInbox(); renderAdmin(); }, 1200 * retries[key]);
   }
-
   function loadWorkerContact(wid) {
     if (S.waCache[wid] !== undefined) return;
     S.waCache[wid] = null;
@@ -829,7 +979,7 @@ footer p{margin:0 0 8px}
     FB.getDoc(FB.doc(S.db, "profiles", wid, "private", "contact")).then(function (s) {
       if (S.uid !== uid) return;
       S.waCache[wid] = readContact(s);
-      renderDirectory(); renderAdmin();
+      renderInbox(); renderAdmin();
     }, function () { if (S.uid === uid) { delete S.waCache[wid]; retryLater("w" + wid); } });
   }
   function loadFamily(eid) {
@@ -849,7 +999,7 @@ footer p{margin:0 0 8px}
     FB.getDoc(FB.doc(S.db, "employers", eid, "private", "contact")).then(function (s) {
       if (S.uid !== uid) return;
       S.famWaCache[eid] = readContact(s);
-      renderInbox(); renderAdmin();
+      renderInbox(); renderAdmin(); renderFamView();
     }, function () { if (S.uid === uid) { delete S.famWaCache[eid]; retryLater("f" + eid); } });
   }
 
@@ -881,7 +1031,7 @@ footer p{margin:0 0 8px}
     return b;
   }
 
-  /* ---------- formulario de quien busca trabajo ---------- */
+  /* ---------- perfil de quien busca trabajo (en pasos) ---------- */
   function readForm() {
     return {
       name: $("f-name").value.trim(),
@@ -911,7 +1061,7 @@ footer p{margin:0 0 8px}
 
   function resetForm() {
     $("form").reset();
-    S.photo = ""; S.dirty = false; S.filled = false;
+    S.photo = ""; S.dirty = false; S.filled = false; S.step = 1; S.showPreview = false;
     $("bio-count").textContent = "0";
     updatePreview();
   }
@@ -937,14 +1087,62 @@ footer p{margin:0 0 8px}
     $("photo-remove").hidden = !f.photo;
   }
 
-  function validate(f) {
-    if (f.name.length < 2) return "Escribí tu nombre o apodo.";
-    if (!f.locality) return "Escribí la localidad donde vivís.";
-    if (!f.years) return "Elegí tus años de experiencia.";
-    if (!f.tasks.length) return "Elegí al menos un tipo de trabajo que buscás.";
-    if (!validPhone(f.whatsapp)) return PHONE_ERR;
-    if (!f.consent) return "Marcá que aceptás que las personas registradas vean tu perfil.";
-    return "";
+  /* Qué falta en cada paso. Devuelve [paso, mensaje] o null. */
+  function stepError(f, upTo) {
+    if (upTo >= 1) {
+      if (f.name.length < 2) return [1, "Escribí tu nombre o apodo."];
+      if (!f.locality) return [1, "Escribí la localidad donde vivís."];
+      if (!f.years) return [1, "Elegí tus años de experiencia."];
+    }
+    if (upTo >= 3 && !f.tasks.length) return [3, "Elegí al menos un tipo de trabajo que buscás."];
+    if (upTo >= 4) {
+      if (!validPhone(f.whatsapp)) return [4, PHONE_ERR];
+      if (!f.consent) return [4, "Marcá que aceptás que las personas registradas vean tu perfil."];
+    }
+    return null;
+  }
+
+  function setStep(n) {
+    S.step = Math.max(1, Math.min(4, n));
+    setStatus("");
+    renderWizard();
+    $("w-form").scrollIntoView();
+  }
+
+  function renderWizard() {
+    var editing = !!S.mine;
+    var steps = document.querySelectorAll("#form .step");
+    for (var i = 0; i < steps.length; i++) steps[i].hidden = Number(steps[i].getAttribute("data-step")) !== S.step;
+    var sp = $("stepper");
+    sp.textContent = "";
+    STEPS.forEach(function (name, idx) {
+      var n = idx + 1;
+      var b = el("button", "dot" + (n === S.step ? " on" : n < S.step ? " done" : ""));
+      b.type = "button";
+      b.setAttribute("aria-label", "Paso " + n + ": " + name);
+      if (n === S.step) b.setAttribute("aria-current", "step");
+      b.disabled = !editing && n > S.step;
+      b.addEventListener("click", function () { setStep(n); });
+      sp.appendChild(b);
+    });
+    $("step-label").textContent = "Paso " + S.step + " de 4 · " + STEPS[S.step - 1];
+    $("form-title").textContent = editing ? "Editá tu perfil" : "Armá tu perfil";
+    $("step-back").hidden = S.step === 1;
+    $("step-next").hidden = S.step === 4;
+    $("save").hidden = !(S.step === 4 || editing);
+    $("save").textContent = editing ? "Guardar cambios" : "Publicar mi perfil";
+    $("save").disabled = S.busy || S.blocked;
+    $("edit-cancel").hidden = !editing;
+    var showPrev = S.showPreview || S.step === 4;
+    $("preview-box").hidden = !showPrev;
+    $("toggle-preview").hidden = S.step === 4;
+    $("toggle-preview").textContent = S.showPreview ? "Ocultar mi ficha" : "Ver cómo queda mi ficha";
+  }
+
+  function nextStep() {
+    var err = stepError(readForm(), S.step);
+    if (err && err[0] <= S.step) { S.step = err[0]; renderWizard(); setStatus(err[1], "err"); return; }
+    setStep(S.step + 1);
   }
 
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
@@ -959,10 +1157,11 @@ footer p{margin:0 0 8px}
     ev.preventDefault();
     if (!S.db || !S.uid) return;
     var f = readForm();
-    var err = validate(f);
-    if (err) { setStatus(err, "err"); return; }
+    var err = stepError(f, 4);
+    if (err) { S.step = err[0]; renderWizard(); setStatus(err[1], "err"); return; }
+    var wasNew = !S.mine;
     S.busy = true;
-    render();
+    renderWizard();
     setStatus("Guardando…");
     var data = { name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo, updatedAt: FB.serverTimestamp() };
     withRetry(function () {
@@ -971,13 +1170,16 @@ footer p{margin:0 0 8px}
       b.set(FB.doc(S.db, "profiles", S.uid, "private", "contact"), { whatsapp: f.whatsapp });
       return b.commit();
     }).then(function () {
-      setStatus("Listo: tu perfil está publicado.", "ok");
-      S.dirty = false; S.filled = true;
+      S.dirty = false; S.filled = true; S.editing = false; S.step = 1; S.showPreview = false;
+      setStatus("");
+      setMsg($("w-view-status"), wasNew ? "¡Listo! Tu perfil está publicado. Cuando una familia te pida una entrevista, vas a ver un número en \"Pedidos\"." : "Listo: guardamos los cambios.", "ok");
+      render();
+      window.scrollTo(0, 0);
     }, function (e) {
       setStatus(e && e.code === "permission-denied" ? "No se pudo guardar. Revisá los datos o salí y volvé a entrar con tu cuenta." : errMsg(e), "err");
     }).then(function () {
       S.busy = false;
-      render();
+      renderWizard();
     });
   }
 
@@ -1006,7 +1208,22 @@ footer p{margin:0 0 8px}
     fr.readAsDataURL(file);
   }
 
-  /* ---------- pedidos recibidos ---------- */
+  function renderWorkerView() {
+    var box = $("w-card");
+    box.textContent = "";
+    if (S.mine) box.appendChild(buildCard(S.mine, { mine: true, preview: true }));
+  }
+
+  /* ---------- pedidos ---------- */
+  function pendingCount() { return S.inbox.filter(function (r) { return r.status === "pending"; }).length; }
+  function sentList() {
+    return Object.keys(S.sent).map(function (k) { return S.sent[k]; }).sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+  }
+  function unseenAccepted() {
+    var seen = readSeen();
+    return sentList().filter(function (r) { return r.status === "accepted" && !seen[r.id]; }).length;
+  }
+
   function answer(r, status) {
     return FB.updateDoc(FB.doc(S.db, "requests", r.id), { status: status, updatedAt: FB.serverTimestamp() });
   }
@@ -1014,15 +1231,25 @@ footer p{margin:0 0 8px}
   function renderInbox() {
     var box = $("inbox");
     box.textContent = "";
+    if (S.mine) renderReceived(box);
+    else if (S.employer) renderSent(box);
+    else {
+      $("pedidos-sub").textContent = "";
+      box.appendChild(el("p", "empty-note", "Primero armá tu perfil en \"Tu perfil\". Después vas a ver acá tus pedidos de entrevista."));
+    }
+  }
+
+  function renderReceived(box) {
+    $("pedidos-sub").textContent = "Cuando una familia quiera entrevistarte, aparece acá. Si aceptás, le pasamos tu WhatsApp y vos ves el suyo.";
     var items = S.inbox.slice().sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
     if (!items.length) {
-      box.appendChild(el("p", "empty-note", "Todavía no tenés pedidos. Cuando una familia quiera entrevistarte, lo vas a ver acá."));
+      box.appendChild(el("p", "empty-note", "Todavía no tenés pedidos. Cuando una familia quiera entrevistarte, lo vas a ver acá. Entrá cada tanto a revisar."));
       return;
     }
     items.forEach(function (r) {
       var row = el("div", "row");
       var info = el("div", "info");
-      info.appendChild(el("b", null, r.employerName + (r.employerLocality ? " · " + r.employerLocality : "")));
+      info.appendChild(el("b", "row-title", r.employerName + (r.employerLocality ? " · " + r.employerLocality : "")));
       var fam = S.famCache[r.employerId];
       if (fam === undefined) loadFamily(r.employerId);
       if (fam) {
@@ -1041,6 +1268,7 @@ footer p{margin:0 0 8px}
       info.appendChild(el("p", "small", "Pedido del " + fmtDate(r.createdAt)));
       var acts = el("div", "actions");
       if (r.status === "pending") {
+        info.appendChild(el("span", "pill warn", "Nuevo: esperando tu respuesta"));
         var ok = el("button", "btn btn-primary", "Aceptar la entrevista");
         ok.type = "button";
         ok.addEventListener("click", function () {
@@ -1073,6 +1301,58 @@ footer p{margin:0 0 8px}
     });
   }
 
+  function renderSent(box) {
+    $("pedidos-sub").textContent = "Los pedidos que mandaste y en qué están. Cuando una persona acepta, acá ves su WhatsApp.";
+    var items = sentList();
+    if (!items.length) {
+      box.appendChild(el("p", "empty-note", "Todavía no mandaste pedidos. Buscá en \"Perfiles\" y tocá \"Pedir una entrevista\" en la ficha que te interese."));
+      var b = el("button", "btn btn-primary", "Ver perfiles");
+      b.type = "button";
+      b.addEventListener("click", function () { go("perfiles"); });
+      box.appendChild(b);
+      return;
+    }
+    items.forEach(function (r) {
+      var p = null;
+      for (var i = 0; i < S.profiles.length; i++) if (S.profiles[i].id === r.workerId) p = S.profiles[i];
+      var row = el("div", "row");
+      var info = el("div", "info");
+      info.appendChild(el("b", "row-title", (p ? p.name : r.workerName) + (p && p.locality ? " · " + p.locality : "")));
+      if (r.message) {
+        var mm = el("p", "msg");
+        mm.appendChild(el("b", null, "Tu mensaje: "));
+        mm.appendChild(document.createTextNode(r.message));
+        info.appendChild(mm);
+      }
+      info.appendChild(el("p", "small", "Enviado el " + fmtDate(r.createdAt)));
+      info.appendChild(reqStatus(r));
+      var acts = el("div", "actions");
+      if (r.status === "pending") {
+        info.appendChild(el("p", "small", "Se entera cuando entra a la página. Puede tardar unos días."));
+        var c = el("button", "btn", "Cancelar pedido");
+        c.type = "button";
+        twoStep(c, "Cancelar pedido", "Confirmar: cancelar", function () { return FB.deleteDoc(FB.doc(S.db, "requests", r.id)); });
+        acts.appendChild(c);
+      } else if (r.status === "accepted") {
+        var wa = S.waCache[r.workerId];
+        if (wa === undefined) loadWorkerContact(r.workerId);
+        if (wa) {
+          info.appendChild(el("p", "small", "Su WhatsApp: " + wa));
+          acts.appendChild(waAnchor(wa, "Escribirle por WhatsApp", "Hola " + (p ? p.name : r.workerName) + ", soy " + S.employer.name + ". Vi tu perfil en Mi Trayectoria y me gustaría coordinar la entrevista."));
+        } else if (wa === "") {
+          info.appendChild(el("p", "small", "Todavía no cargó su WhatsApp."));
+        } else {
+          info.appendChild(el("p", "small", "Cargando su WhatsApp…"));
+        }
+      } else {
+        info.appendChild(el("p", "small", "Por ahora no puede tomar la entrevista."));
+      }
+      row.appendChild(info);
+      row.appendChild(acts);
+      box.appendChild(row);
+    });
+  }
+
   /* ---------- familia ---------- */
   function fillFam(f) {
     $("e-name").value = f.name;
@@ -1081,6 +1361,23 @@ footer p{margin:0 0 8px}
     $("e-about").value = f.about;
     $("about-count").textContent = String(f.about.length);
     $("e-consent").checked = true;
+  }
+
+  function renderFamView() {
+    var box = $("f-card");
+    box.textContent = "";
+    var f = S.employer;
+    if (!f) return;
+    box.appendChild(el("h3", "card-name", f.name));
+    box.appendChild(el("p", "card-meta", f.locality));
+    var k = el("div", "kv");
+    k.appendChild(el("b", null, "Busca ayuda con"));
+    k.appendChild(tagList(f.tasks));
+    box.appendChild(k);
+    if (f.about) box.appendChild(el("p", "bio", f.about));
+    var wa = S.famWaCache[S.uid];
+    if (wa === undefined) loadFamilyContact(S.uid);
+    box.appendChild(el("p", "small", "Tu WhatsApp (privado): " + (wa || "—")));
   }
 
   function saveFam(ev) {
@@ -1094,6 +1391,7 @@ footer p{margin:0 0 8px}
     if (!tasks.length) { setMsg(st, "Elegí al menos un tipo de ayuda.", "err"); return; }
     if (!validPhone(wa)) { setMsg(st, PHONE_ERR, "err"); return; }
     if (!$("e-consent").checked) { setMsg(st, "Marcá que aceptás las condiciones.", "err"); return; }
+    var wasNew = !S.employer;
     $("e-save").disabled = true;
     setMsg(st, "Guardando…");
     withRetry(function () {
@@ -1102,8 +1400,12 @@ footer p{margin:0 0 8px}
       b.set(FB.doc(S.db, "employers", S.uid, "private", "contact"), { whatsapp: wa });
       return b.commit();
     }).then(function () {
-      S.famDirty = false; S.famFilled = true;
-      setMsg(st, "Listo: guardamos tus datos. Ya podés pedir entrevistas en los perfiles de abajo.", "ok");
+      S.famDirty = false; S.famFilled = true; S.famEditing = false;
+      S.famWaCache[S.uid] = wa;
+      setMsg(st, "");
+      setMsg($("f-view-status"), wasNew ? "¡Listo! Ya podés pedir entrevistas. Tocá \"Ver perfiles\"." : "Listo: guardamos los cambios.", "ok");
+      render();
+      window.scrollTo(0, 0);
     }, function (e) {
       setMsg(st, errMsg(e), "err");
     }).then(function () { $("e-save").disabled = false; });
@@ -1119,13 +1421,13 @@ footer p{margin:0 0 8px}
     pend.forEach(function (r) {
       var row = el("div", "row");
       var info = el("div", "info");
-      info.appendChild(el("b", null, r.employerName + " quiere entrevistar a " + r.workerName));
+      info.appendChild(el("b", "row-title", r.employerName + " quiere entrevistar a " + r.workerName));
       info.appendChild(el("p", "small", "Pedido del " + fmtDate(r.createdAt)));
       var acts = el("div", "actions");
       var wa = S.waCache[r.workerId];
       if (wa === undefined) loadWorkerContact(r.workerId);
       if (wa) {
-        acts.appendChild(waAnchor(wa, "Avisarle por WhatsApp", "Hola " + r.workerName + ", te escribimos de Mi Trayectoria. Tenés un pedido de entrevista. Entrá a " + SITE_URL + " para verlo.", "btn"));
+        acts.appendChild(waAnchor(wa, "Avisarle por WhatsApp", "Hola " + r.workerName + ", te escribimos de Mi Trayectoria. Tenés un pedido de entrevista. Entrá a " + SITE_URL + " y tocá \"Pedidos\" para verlo.", "btn"));
       } else if (wa === "") {
         info.appendChild(el("p", "small", "No cargó su WhatsApp."));
       }
@@ -1141,7 +1443,7 @@ footer p{margin:0 0 8px}
     fams.forEach(function (f) {
       var row = el("div", "row");
       var info = el("div", "info");
-      info.appendChild(el("b", null, f.name + " · " + f.locality));
+      info.appendChild(el("b", "row-title", f.name + " · " + f.locality));
       if (f.tasks.length) info.appendChild(el("p", "small", "Busca: " + f.tasks.join(", ")));
       if (f.about) info.appendChild(el("p", "msg", f.about));
       if (S.blockedIds[f.id]) info.appendChild(el("span", "pill warn", "Bloqueada"));
@@ -1179,6 +1481,9 @@ footer p{margin:0 0 8px}
 
   function renderDirectory() {
     if (!S.verified) return;
+    $("perfiles-sub").textContent = S.mine
+      ? "Las personas que buscan trabajo en esta página. Mirar otras fichas te puede dar ideas para la tuya."
+      : "Personas que buscan trabajo en casas de familia. Filtrá por localidad o por tipo de trabajo, y tocá \"Pedir una entrevista\" en la ficha que te interese.";
     var loc = $("flt-loc").value, task = $("flt-task").value;
     var items = S.profiles.filter(function (p) {
       if (loc && norm(p.locality) !== loc) return false;
@@ -1211,6 +1516,7 @@ footer p{margin:0 0 8px}
       S.profiles = snap.docs.map(function (d) { return clean(d.id, snapData(d)); });
       renderFilters();
       renderDirectory();
+      renderInbox();
     });
   }
   function ensureSent() {
@@ -1219,12 +1525,13 @@ footer p{margin:0 0 8px}
       snap.docs.forEach(function (d) { var r = cleanReq(d.id, snapData(d)); m[r.workerId] = r; });
       S.sent = m;
       renderDirectory();
+      render();
     });
   }
   function ensureInbox() {
     listen("inbox", FB.query(FB.collection(S.db, "requests"), FB.where("workerId", "==", S.uid)), function (snap) {
       S.inbox = snap.docs.map(function (d) { return cleanReq(d.id, snapData(d)); });
-      renderInbox();
+      S.inboxLoaded = true;
       render();
     });
   }
@@ -1253,6 +1560,7 @@ footer p{margin:0 0 8px}
       var input = kind === "profiles" ? $("f-wa") : $("e-wa");
       var dirty = kind === "profiles" ? S.dirty : S.famDirty;
       if (!dirty && !input.value) input.value = wa;
+      if (kind === "employers") { S.famWaCache[uid] = wa; renderFamView(); }
     }, function () {});
   }
 
@@ -1312,11 +1620,13 @@ footer p{margin:0 0 8px}
 
   function forgot() {
     var email = $("l-email").value.trim(), st = $("l-status");
+    var okMsg = "Si hay una cuenta con ese correo, te mandamos un mail para crear una contraseña nueva. Revisá también la carpeta de spam.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setMsg(st, "Escribí tu correo arriba y después tocá \"Olvidé mi contraseña\".", "err"); $("l-email").focus(); return; }
     FB.sendPasswordResetEmail(S.auth, email, { url: SITE_URL }).then(function () {
-      setMsg(st, "Si hay una cuenta con ese correo, te mandamos un mail para crear una contraseña nueva. Revisá también la carpeta de spam.", "ok");
+      setMsg(st, okMsg, "ok");
     }, function (e) {
-      setMsg(st, e && e.code === "auth/invalid-email" ? authErr(e) : "Si hay una cuenta con ese correo, te mandamos un mail para crear una contraseña nueva. Revisá también la carpeta de spam.", e && e.code === "auth/invalid-email" ? "err" : "ok");
+      if (e && e.code === "auth/invalid-email") setMsg(st, authErr(e), "err");
+      else setMsg(st, okMsg, "ok");
     });
   }
 
@@ -1341,13 +1651,8 @@ footer p{margin:0 0 8px}
 
   function startAs(role) {
     setIntent(role);
-    if (S.uid) { render(); scrollToRole(); }
+    if (S.uid) { go("perfil"); render(); }
     else { render(); $("entrar").scrollIntoView(); }
-  }
-  function scrollToRole() {
-    var v = view();
-    var t = v === "worker" ? $("publicar") : v === "employer" ? $("familia") : null;
-    if (t) t.scrollIntoView();
   }
   function logout() {
     FB.signOut(S.auth).catch(function () { setMsg($("top-status"), "No se pudo salir. Probá de nuevo.", "err"); });
@@ -1355,19 +1660,25 @@ footer p{margin:0 0 8px}
 
   function onAuth(user) {
     stopAll();
-    var keep = { db: S.db, auth: S.auth, intent: S.intent };
+    var keep = { db: S.db, auth: S.auth, intent: S.intent, tab: S.tab };
     S = freshState();
-    S.db = keep.db; S.auth = keep.auth; S.authReady = true; S.intent = keep.intent;
+    S.db = keep.db; S.auth = keep.auth; S.authReady = true; S.intent = keep.intent; S.tab = keep.tab;
     resetForm(); setStatus("");
     $("fam-form").reset(); $("about-count").textContent = "0"; setMsg($("e-status"), "");
-    setMsg($("top-status"), "");
-    if (!user) { render(); return; }
+    setMsg($("top-status"), ""); setMsg($("w-view-status"), ""); setMsg($("f-view-status"), "");
+    if (!user) {
+      S.tab = null;
+      if (hashTab() && hashTab() !== "ayuda") { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
+      render();
+      return;
+    }
 
     var uid = user.uid;
     S.uid = uid;
     S.user = user;
     S.userLabel = user.email || user.displayName || "tu cuenta";
     S.verified = !!user.emailVerified;
+    S.tabChosen = !!hashTab() && hashTab() !== "ayuda";
     if (!S.verified) {
       $("v-text").textContent = "Te mandamos un mail a " + S.userLabel + " para confirmar que es tuyo. Abrí el link del mail y después tocá el botón de abajo.";
       render();
@@ -1434,41 +1745,69 @@ footer p{margin:0 0 8px}
   function render() {
     var v = view();
     var out = v === "landing" || v === "off";
-    $("hero-cta").hidden = !out;
-    $("como").hidden = !out;
+    var app = !out && v !== "verify";
+
+    /* Cabecera y menú */
+    $("hero").hidden = !out;
+    $("appbar").hidden = !(app || v === "verify");
+    $("tabbar").hidden = !app || v === "loading";
+    document.body.classList.toggle("has-tabbar", app && v !== "loading");
     $("entrar").hidden = v !== "landing";
     $("login-title").textContent = S.intent === "employer" ? "Entrá para buscar a alguien" : S.intent === "worker" ? "Entrá para publicar tu perfil" : "Entrá para seguir";
     $("verificar").hidden = v !== "verify";
-    $("elegir").hidden = v !== "choose";
 
-    $("account").hidden = !S.uid;
-    if (S.uid) $("acc-text").textContent = "Entraste como " + S.userLabel + ".";
+    /* Sección elegida */
+    /* La primera vez, abrir en la sección más útil (esperando a saber si hay pedidos nuevos). */
+    var waitInbox = v === "worker" && S.mine && !S.inboxLoaded;
+    if (app && v !== "loading" && !S.tabChosen && !waitInbox) { S.tab = defaultTab(); S.tabChosen = true; }
+    var tab = S.tab || "perfil";
+    if (tab === "admin" && !S.isAdmin) tab = "perfil";
+    var showTabs = app && v !== "loading";
+    $("como").hidden = !(out || (showTabs && tab === "ayuda"));
+    ["perfil", "perfiles", "pedidos", "admin"].forEach(function (t) {
+      $("tab-" + t).hidden = !(showTabs && tab === t);
+    });
+    var btns = document.querySelectorAll("#tabbar button");
+    for (var i = 0; i < btns.length; i++) {
+      var on = btns[i].getAttribute("data-tab") === tab;
+      if (on) btns[i].setAttribute("aria-current", "page"); else btns[i].removeAttribute("aria-current");
+    }
+    document.querySelector('#tabbar [data-tab="admin"]').hidden = !S.isAdmin;
 
-    var pending = S.inbox.filter(function (r) { return r.status === "pending"; }).length;
-    $("alert").hidden = !(S.mine && pending);
-    $("alert-text").textContent = pending === 1 ? "Tenés 1 pedido de entrevista nuevo." : "Tenés " + pending + " pedidos de entrevista nuevos.";
+    /* Número en "Pedidos" */
+    if (S.employer && tab === "pedidos") markSeen(sentList().filter(function (r) { return r.status === "accepted"; }).map(function (r) { return r.id; }));
+    var n = S.mine ? pendingCount() : S.employer ? unseenAccepted() : 0;
+    $("badge").hidden = !n;
+    $("badge").textContent = n > 9 ? "9+" : String(n);
+    var pb = document.querySelector('#tabbar [data-tab="pedidos"]');
+    pb.setAttribute("aria-label", n ? "Pedidos, " + n + (n === 1 ? " novedad" : " novedades") : "Pedidos");
 
+    $("acc-text").textContent = S.uid ? "Entraste como " + S.userLabel + "." : "";
     $("blocked-note").hidden = !(S.blocked && S.verified);
 
-    var isWorker = v === "worker";
-    $("publicar").hidden = !isWorker;
-    $("pedidos").hidden = !(isWorker && S.mine);
+    /* Tu perfil */
+    $("elegir").hidden = v !== "choose";
+    var isWorker = v === "worker", isFam = v === "employer";
+    $("mini-worker").hidden = !(isWorker && !S.mine);
+    $("mini-employer").hidden = !(isFam && !S.employer);
+    var wEdit = isWorker && (!S.mine || S.editing);
+    $("w-view").hidden = !(isWorker && S.mine && !S.editing);
+    $("w-form").hidden = !wEdit;
     $("worker-back").hidden = !(isWorker && !S.mine);
-    $("save").disabled = S.busy || !S.uid || S.blocked;
-    $("delete").hidden = !S.mine;
-    $("save").textContent = S.mine ? "Guardar cambios" : "Publicar mi perfil";
-    $("form-title").textContent = S.mine ? "Tu perfil" : "Publicá tu perfil";
+    if (isWorker && S.mine && !S.editing) renderWorkerView();
+    if (wEdit) renderWizard();
 
-    var isFam = v === "employer";
-    $("familia").hidden = !isFam;
+    var fEdit = isFam && (!S.employer || S.famEditing);
+    $("f-view").hidden = !(isFam && S.employer && !S.famEditing);
+    $("f-form").hidden = !fEdit;
     $("fam-back").hidden = !(isFam && !S.employer);
-    $("e-delete").hidden = !S.employer;
+    $("fam-cancel").hidden = !(S.employer && S.famEditing);
     $("e-save").disabled = S.blocked;
     $("e-save").textContent = S.employer ? "Guardar cambios" : "Guardar";
-    $("fam-title").textContent = S.employer ? "Tu familia" : "Contanos sobre tu familia";
+    $("fam-title").textContent = S.employer ? "Editá los datos de tu familia" : "Contanos sobre tu familia";
+    if (isFam && S.employer && !S.famEditing) renderFamView();
 
-    $("admin").hidden = !S.isAdmin;
-    $("perfiles").hidden = !(S.verified && v !== "loading");
+    if (showTabs && tab === "pedidos") renderInbox();
   }
 
   /* ---------- arranque ---------- */
@@ -1483,10 +1822,26 @@ footer p{margin:0 0 8px}
     });
     $("form").addEventListener("change", updatePreview);
     $("form").addEventListener("submit", save);
+    $("step-next").addEventListener("click", nextStep);
+    $("step-back").addEventListener("click", function () { setStep(S.step - 1); });
+    $("toggle-preview").addEventListener("click", function () { S.showPreview = !S.showPreview; renderWizard(); if (S.showPreview) $("preview-box").scrollIntoView(); });
+    $("w-edit").addEventListener("click", function () { S.editing = true; S.step = 1; setMsg($("w-view-status"), ""); render(); window.scrollTo(0, 0); });
+    $("edit-cancel").addEventListener("click", function () {
+      S.editing = false; S.dirty = false; S.step = 1; S.showPreview = false;
+      if (S.mine) { fillForm(S.mine); loadMyContact("profiles"); }
+      setStatus(""); render(); window.scrollTo(0, 0);
+    });
     $("f-photo").addEventListener("change", onPhoto);
     $("photo-remove").addEventListener("click", function () { S.photo = ""; S.dirty = true; updatePreview(); });
     $("fam-form").addEventListener("input", function () { S.famDirty = true; $("about-count").textContent = String($("e-about").value.length); });
     $("fam-form").addEventListener("submit", saveFam);
+    $("f-edit").addEventListener("click", function () { S.famEditing = true; setMsg($("f-view-status"), ""); render(); window.scrollTo(0, 0); });
+    $("f-go").addEventListener("click", function () { go("perfiles"); });
+    $("fam-cancel").addEventListener("click", function () {
+      S.famEditing = false; S.famDirty = false;
+      if (S.employer) { fillFam(S.employer); $("e-wa").value = S.famWaCache[S.uid] || ""; }
+      setMsg($("e-status"), ""); render(); window.scrollTo(0, 0);
+    });
     $("flt-loc").addEventListener("change", renderDirectory);
     $("flt-task").addEventListener("change", renderDirectory);
     $("login-google").addEventListener("click", loginGoogle);
@@ -1495,6 +1850,7 @@ footer p{margin:0 0 8px}
     $("l-forgot").addEventListener("click", forgot);
     $("v-done").addEventListener("click", checkVerified);
     $("v-resend").addEventListener("click", resendVerification);
+    $("v-out").addEventListener("click", logout);
     $("logout").addEventListener("click", logout);
     $("cta-worker").addEventListener("click", function () { startAs("worker"); });
     $("cta-employer").addEventListener("click", function () { startAs("employer"); });
@@ -1502,18 +1858,22 @@ footer p{margin:0 0 8px}
     $("pick-employer").addEventListener("click", function () { startAs("employer"); });
     $("worker-back").addEventListener("click", function () { setIntent("employer"); render(); });
     $("fam-back").addEventListener("click", function () { setIntent("worker"); render(); });
+    var tb = document.querySelectorAll("#tabbar button");
+    for (var i = 0; i < tb.length; i++) {
+      tb[i].addEventListener("click", function () { go(this.getAttribute("data-tab")); });
+    }
     twoStep($("delete"), "Borrar mi perfil", "Confirmar: borrar mi perfil", function () {
       return deleteWorker(S.uid).then(function () {
         resetForm();
         setStatus("Tu perfil fue borrado.", "ok");
       });
-    }, $("status"));
+    }, $("w-view-status"));
     twoStep($("e-delete"), "Borrar mis datos", "Confirmar: borrar", function () {
       return deleteFamily(S.uid).then(function () {
         $("fam-form").reset(); S.famDirty = false; S.famFilled = false;
         setMsg($("e-status"), "Tus datos fueron borrados.", "ok");
       });
-    }, $("e-status"));
+    }, $("f-view-status"));
     updatePreview();
     render();
   }
