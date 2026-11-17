@@ -118,12 +118,16 @@ Cómo funciona la página:
 - Para ver perfiles hay que **entrar con una cuenta**: Google, o cualquier correo con contraseña. Las cuentas de correo tienen que confirmar el mail antes de poder ver o publicar nada.
 - Cada cuenta elige una opción: **busco trabajo** (publica su perfil) o **busco a alguien para mi casa** (carga un perfil corto de su familia).
 - Las familias tocan **Pedir una entrevista** en un perfil y pueden dejar un mensaje. La persona ve el pedido la próxima vez que entra, junto con los datos de la familia, y elige **Aceptar la entrevista** o **No, gracias**. Si acepta, cada una ve el WhatsApp de la otra.
-- Los WhatsApp **nunca se publican**: solo se pasan cuando alguien acepta una entrevista.
+- Cada persona que busca trabajo elige cómo la contactan: **WhatsApp directo** (las familias registradas ven su número y le escriben) o **pedido de entrevista** (su número solo lo ve la familia cuyo pedido acepta). El WhatsApp nunca aparece escrito en la ficha.
 
 Entrando con tu cuenta, ves la sección **Administración**:
 
 - **Pedidos sin responder:** la página no le puede mandar avisos a la persona. Si un pedido lleva días sin respuesta, usá **Avisarle por WhatsApp**: abre un mensaje ya escrito.
+- **Estadísticas:** totales (perfiles, familias, contactos por WhatsApp, pedidos, porcentaje de aceptación y tiempo de respuesta), actividad de las últimas 4 semanas, y oferta y demanda por localidad, tipo de trabajo y modalidad. La actividad por semana se cuenta desde que empezó el registro de acciones.
 - **Familias registradas:** podés escribirles, **bloquearlas** (pueden ver, pero no mandar pedidos ni cambiar sus datos) o **quitarlas**.
+- **Cuentas bloqueadas:** todas las cuentas que bloqueaste, aunque ya no tengan perfil, con el botón **Desbloquear**.
+- **Quitar perfil vs. Bloquear:** "Quitar" borra la ficha, pero la persona puede volver a armarla. "Bloquear" le impide publicar y contactar, pero deja la ficha. Para un perfil falso u ofensivo, usá las dos: primero Bloquear y después Quitar.
+- **Borrar una cuenta completa** (si alguien lo pide): quitá su perfil desde la página y después, en Firebase → **Authentication** → **Users**, buscá su correo y, en los tres puntitos, tocá **Borrar cuenta**.
 - En los **perfiles** también tenés **Quitar perfil** y **Bloquear**.
 
 > Cada vez que se cambia `firestore.rules` en el repositorio, hay que volver a pegarlo en Firebase (Firestore Database → Reglas → **Publicar**).

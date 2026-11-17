@@ -60,14 +60,15 @@ service cloud.firestore {
     }
 
     function validProfile(d) {
-      return d.keys().hasOnly(['name', 'locality', 'years', 'bio', 'tasks', 'mode', 'photo', 'updatedAt'])
-        && d.keys().hasAll(['name', 'locality', 'years', 'bio', 'tasks', 'mode', 'photo', 'updatedAt'])
+      return d.keys().hasOnly(['name', 'locality', 'years', 'bio', 'tasks', 'mode', 'contact', 'photo', 'updatedAt'])
+        && d.keys().hasAll(['name', 'locality', 'years', 'bio', 'tasks', 'mode', 'contact', 'photo', 'updatedAt'])
         && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
         && d.locality is string && d.locality.size() >= 1 && d.locality.size() <= 60
         && d.years in ['lt1', '1-3', '4-10', '10+']
         && d.bio is string && d.bio.size() <= 400
         && validTasks(d.tasks)
-        && d.mode in ['', 'con-retiro', 'sin-retiro', 'horas']
+        && d.mode in ['con-retiro', 'sin-retiro', 'horas']
+        && d.contact in ['whatsapp', 'pedido']
         && d.photo is string && d.photo.size() < 150000
         && (d.photo == '' || d.photo.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))
         && d.updatedAt == request.time;
@@ -93,10 +94,12 @@ service cloud.firestore {
       allow update: if verified() && me() == uid && notBlocked() && validProfile(request.resource.data);
       allow delete: if signedIn() && (me() == uid || isAdmin());
 
-      // WhatsApp privado: lo ve la persona, la administradora,
-      // y la familia cuyo pedido de entrevista fue aceptado.
+      // WhatsApp privado: lo ve la persona, la administradora, la familia cuyo pedido fue aceptado,
+      // y, si la persona eligió "que me escriban directo", cualquier familia registrada y no bloqueada.
       match /private/{docId} {
-        allow read: if signedIn() && (me() == uid || isAdmin() || accepted(me(), uid));
+        allow read: if signedIn() && (me() == uid || isAdmin() || accepted(me(), uid)
+          || (verified() && notBlocked() && exists(employerPath(me()))
+              && get(profilePath(uid)).data.contact == 'whatsapp'));
         allow create, update: if verified() && me() == uid && notBlocked()
           && docId == 'contact' && validContact(request.resource.data);
         allow delete: if signedIn() && (me() == uid || isAdmin());
@@ -152,6 +155,23 @@ service cloud.firestore {
 
       // La familia puede cancelar un pedido que todavía no fue respondido.
       allow delete: if signedIn() && (isAdmin() || (resource.data.employerId == me() && resource.data.status == 'pending'));
+    }
+
+    // ---------- Registro de acciones (para las estadísticas) ----------
+    // Cada cuenta anota sus propias acciones; nadie puede cambiarlas ni borrarlas.
+    // Los contactos por WhatsApp usan un ID fijo para contarse una sola vez por pareja.
+    match /events/{eid} {
+      allow read: if isAdmin() || (signedIn() && resource.data.actor == me());
+      allow create: if verified()
+        && request.resource.data.keys().hasOnly(['type', 'actor', 'target', 'at'])
+        && request.resource.data.keys().hasAll(['type', 'actor', 'target', 'at'])
+        && request.resource.data.actor == me()
+        && request.resource.data.type in ['profile_created', 'profile_deleted', 'family_created', 'family_deleted',
+             'whatsapp_click', 'request_sent', 'request_accepted', 'request_rejected', 'request_canceled']
+        && request.resource.data.target is string && request.resource.data.target.size() <= 128
+        && request.resource.data.at == request.time
+        && (request.resource.data.type != 'whatsapp_click' || eid == 'wa_' + me() + '_' + request.resource.data.target);
+      allow update, delete: if false;
     }
 
     // ---------- Bloqueos (solo la administradora) ----------

@@ -205,6 +205,41 @@ body.has-tabbar footer{padding-bottom:24px}
 .spaced-top{margin-top:20px}
 .who-am-i{margin:-32px 0 24px}
 section.tab{padding-top:40px}
+
+/* entrar */
+.btn-big{min-height:60px;font-size:19px}
+.center{text-align:center}
+.center-block{display:block;margin:4px auto 0}
+/* ficha compacta */
+.card{padding:18px 20px;gap:10px}
+.card .avatar{width:56px;height:56px}
+.card .avatar-empty{font-size:24px}
+.card-name{font-size:21px}
+.card-line{margin:2px 0 0;font-size:15px;color:var(--ink)}
+.card .linkbtn{align-self:flex-start;min-height:36px}
+.card .tags .more{background:transparent;border:1px solid var(--line-strong)}
+/* opciones de contacto */
+.options{display:flex;flex-direction:column;gap:10px}
+.option{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line-strong);border-radius:14px;background:var(--surface);cursor:pointer}
+.option input{width:22px;height:22px;margin:2px 0 0;flex:none}
+.option b{display:block}
+.option span{font-size:15px;color:var(--muted)}
+.option span b{color:var(--ink);font-size:16px}
+.option:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+/* administración */
+.jump{display:flex;flex-wrap:wrap;gap:8px 16px;margin:-12px 0 24px}
+.jump a{display:inline-flex;align-items:center;min-height:40px;font-weight:600;font-size:15px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:0 0 24px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.tile .num{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:34px;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .lbl{display:block;font-size:14px;color:var(--muted);margin-top:4px}
+.table-wrap{overflow-x:auto;margin:0 0 24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.table{width:100%;border-collapse:collapse;font-size:15px}
+.table caption{text-align:left;font-weight:600;padding:12px 16px 4px}
+.table th,.table td{padding:8px 16px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}
+.table th{font-size:13px;color:var(--muted);font-weight:600}
+.table td.n,.table th.n{text-align:right;font-variant-numeric:tabular-nums}
+.stats-note{margin:-12px 0 24px}
 </style>
 
 <body>
@@ -270,8 +305,12 @@ section.tab{padding-top:40px}
     <h2 class="sec-title" id="login-title">Entrá para seguir</h2>
     <p class="sec-sub">Para ver los perfiles, publicar el tuyo o pedir una entrevista, entrá con una cuenta. Es gratis.</p>
     <div class="login-box panel">
-      <button type="button" class="btn btn-primary btn-wide" id="login-google">Entrar con Google</button>
-      <p class="divider"><span>o con tu correo</span></p>
+      <button type="button" class="btn btn-primary btn-wide btn-big" id="login-google">Entrar con Google</button>
+      <p class="small center">Es lo más fácil: si tenés un celular Android, ya tenés cuenta de Google.</p>
+      <p class="status" id="g-status" role="status" aria-live="polite"></p>
+      <button type="button" class="linkbtn center-block" id="show-email" aria-expanded="false" aria-controls="email-box">No tengo Google: usar mi correo</button>
+      <div id="email-box" hidden>
+      <p class="divider"><span>con tu correo</span></p>
       <form id="login-form" novalidate>
         <div class="field">
           <label for="l-email">Tu correo</label>
@@ -289,7 +328,8 @@ section.tab{padding-top:40px}
         <button type="button" class="linkbtn" id="l-forgot">Olvidé mi contraseña</button>
         <p class="status" id="l-status" role="status" aria-live="polite"></p>
       </form>
-      <p class="small">La página es para mayores de 18 años. <a href="privacidad.html">Cómo cuidamos tus datos</a>.</p>
+      </div>
+      <p class="small spaced-top">La página es para mayores de 18 años. <a href="privacidad.html">Cómo cuidamos tus datos</a>.</p>
     </div>
   </div>
 </section>
@@ -305,11 +345,11 @@ section.tab{padding-top:40px}
         <ol>
           <li><b>Entrá</b> con tu cuenta de Google o con tu correo.</li>
           <li>Elegí <b>"Busco trabajo"</b>.</li>
-          <li><b>Armá tu perfil en 4 pasos:</b> tus datos, tu foto, el trabajo que buscás y tu WhatsApp. Tu WhatsApp no se publica.</li>
+          <li><b>Armá tu perfil en 4 pasos:</b> tus datos, tu foto, el trabajo que buscás y tu WhatsApp.</li>
+          <li><b>Elegí cómo querés que te contacten:</b> que las familias te escriban directo por WhatsApp, o que te manden un pedido y vos decidís.</li>
           <li>Tocá <b>"Publicar mi perfil"</b>. Desde ese momento las familias registradas pueden verlo.</li>
-          <li><b>Entrá a la página cada tanto.</b> Si una familia te pidió una entrevista, vas a ver un número en <b>"Pedidos"</b>.</li>
-          <li>Leé qué ayuda busca la familia y su mensaje. Tocá <b>"Aceptar la entrevista"</b> o <b>"No, gracias"</b>.</li>
-          <li>Si aceptás, vas a ver su WhatsApp y ella el tuyo. <b>Escribile para coordinar</b> el día y la hora.</li>
+          <li>Si elegiste WhatsApp directo, las familias te escriben ahí. Si elegiste pedidos, <b>entrá a la página cada tanto</b>: vas a ver un número en <b>"Pedidos"</b>.</li>
+          <li>En cada pedido leé qué ayuda busca la familia y tocá <b>"Aceptar la entrevista"</b> o <b>"No, gracias"</b>. Si aceptás, se pasan los WhatsApp para coordinar.</li>
         </ol>
       </div>
       <div class="panel howto">
@@ -319,8 +359,8 @@ section.tab{padding-top:40px}
           <li>Elegí <b>"Busco a alguien para mi casa"</b>.</li>
           <li><b>Contá sobre tu familia:</b> localidad, qué ayuda buscás y tu WhatsApp. Tu WhatsApp no se publica.</li>
           <li>En <b>"Perfiles"</b>, filtrá por localidad o tipo de trabajo y mirá las fichas.</li>
-          <li>Si alguien te interesa, tocá <b>"Pedir una entrevista"</b> y dejá un mensaje corto con días y horarios.</li>
-          <li>En <b>"Pedidos"</b> vas a ver si la persona aceptó. Puede tardar unos días, porque se entera cuando entra a la página.</li>
+          <li>Si alguien te interesa, según lo que eligió esa persona vas a ver <b>"Escribirle por WhatsApp"</b> (le escribís directo) o <b>"Pedir una entrevista"</b> (le mandás un pedido con un mensaje corto).</li>
+          <li>Los pedidos los seguís en <b>"Pedidos"</b>. Puede tardar unos días, porque la persona se entera cuando entra a la página.</li>
           <li>Si acepta, vas a ver su WhatsApp. <b>Escribile para coordinar</b> la entrevista.</li>
         </ol>
       </div>
@@ -382,7 +422,7 @@ section.tab{padding-top:40px}
     <!-- Persona: ficha publicada -->
     <div id="w-view" hidden>
       <h2 class="sec-title">Tu perfil</h2>
-      <p class="sec-sub">Así ven tu ficha las familias. Tu WhatsApp no aparece: solo lo ve una familia si aceptás su pedido.</p>
+      <p class="sec-sub" id="w-view-sub">Así ven tu ficha las familias.</p>
       <div class="prev-col" id="w-card"></div>
       <div class="actions spaced-top">
         <button type="button" class="btn btn-primary" id="w-edit">Editar mi perfil</button>
@@ -458,10 +498,19 @@ section.tab{padding-top:40px}
         </div>
 
         <div class="step" data-step="4">
+          <fieldset class="field">
+            <legend>¿Cómo querés que te contacten las familias?</legend>
+            <div class="options">
+              <label class="option"><input type="radio" name="f-contact" value="pedido">
+                <span><b>Que me manden un pedido y yo decido</b>Tu WhatsApp solo lo ve la familia cuyo pedido aceptes.</span></label>
+              <label class="option"><input type="radio" name="f-contact" value="whatsapp">
+                <span><b>Que me escriban directo por WhatsApp</b>Es más rápido, pero tu número lo puede ver cualquier familia registrada.</span></label>
+            </div>
+          </fieldset>
           <div class="field private">
             <label for="f-wa">Tu WhatsApp (no se publica)</label>
             <input type="tel" id="f-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
-            <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve una familia si vos aceptás su pedido de entrevista.</span>
+            <span class="hint">Con código de área. Por ejemplo: 11 2345 6789.</span>
           </div>
           <div class="check">
             <input type="checkbox" id="f-consent">
@@ -526,7 +575,7 @@ section.tab{padding-top:40px}
         <div class="field private">
           <label for="e-wa">Tu WhatsApp (no se publica)</label>
           <input type="tel" id="e-wa" maxlength="20" inputmode="tel" autocomplete="tel-national" placeholder="11 2345 6789">
-          <span class="hint">Con código de área, sin 0 ni 15. Solo lo ve la persona que acepte tu pedido de entrevista.</span>
+          <span class="hint">Con código de área. Por ejemplo: 11 2345 6789. Solo lo ve la persona que acepte tu pedido de entrevista.</span>
         </div>
         <div class="check">
           <input type="checkbox" id="e-consent">
@@ -557,6 +606,15 @@ section.tab{padding-top:40px}
         <label for="flt-task">Tipo de trabajo</label>
         <select id="flt-task"><option value="">Todos</option></select>
       </div>
+      <div class="field">
+        <label for="flt-mode">Modalidad</label>
+        <select id="flt-mode">
+          <option value="">Todas</option>
+          <option value="con-retiro">Con retiro</option>
+          <option value="sin-retiro">Sin retiro</option>
+          <option value="horas">Por horas</option>
+        </select>
+      </div>
     </div>
     <p class="count" id="count" aria-live="polite"></p>
     <div class="grid" id="grid"></div>
@@ -570,6 +628,10 @@ section.tab{padding-top:40px}
     <h2 class="sec-title">Pedidos de entrevista</h2>
     <p class="sec-sub" id="pedidos-sub"></p>
     <div class="list" id="inbox"></div>
+    <div id="wa-sent-box" hidden>
+      <h3 class="sub-title">Personas a las que les escribiste por WhatsApp</h3>
+      <div class="list" id="wa-sent"></div>
+    </div>
   </div>
 </section>
 
@@ -578,11 +640,21 @@ section.tab{padding-top:40px}
   <div class="wrap">
     <h2 class="sec-title">Administración</h2>
     <p class="sec-sub">Solo vos ves esta parte. Para quitar o bloquear un perfil, buscalo en "Perfiles".</p>
-    <h3 class="sub-title">Pedidos sin responder</h3>
+    <nav class="jump" aria-label="Partes de administración">
+      <a href="#adm-stats-title">Estadísticas</a>
+      <a href="#adm-req-title">Pedidos sin responder</a>
+      <a href="#adm-fam-title">Familias</a>
+      <a href="#adm-blk-title">Cuentas bloqueadas</a>
+    </nav>
+    <h3 class="sub-title" id="adm-stats-title">Estadísticas</h3>
+    <div id="adm-stats"></div>
+    <h3 class="sub-title" id="adm-req-title">Pedidos sin responder</h3>
     <p class="small spaced">La página no puede avisarle sola a la persona. Si un pedido lleva días sin respuesta, escribile por WhatsApp.</p>
     <div class="list" id="adm-requests"></div>
-    <h3 class="sub-title">Familias registradas</h3>
+    <h3 class="sub-title" id="adm-fam-title">Familias registradas</h3>
     <div class="list" id="adm-families"></div>
+    <h3 class="sub-title" id="adm-blk-title">Cuentas bloqueadas</h3>
+    <div class="list" id="adm-blocked"></div>
   </div>
 </section>
 </main>
@@ -634,7 +706,8 @@ section.tab{padding-top:40px}
       waCache: {}, famCache: {}, famWaCache: {},
       photo: "", dirty: false, filled: false, famDirty: false, famFilled: false, busy: false,
       editing: false, famEditing: false, step: 1, showPreview: false,
-      openReq: null, reqDraft: "", listening: {}, tabChosen: false, inboxLoaded: false
+      openReq: null, reqDraft: "", listening: {}, tabChosen: false, inboxLoaded: false,
+      expanded: {}, events: [], waSent: [], showEmail: false
     };
   }
   S = freshState();
@@ -661,13 +734,30 @@ section.tab{padding-top:40px}
   /* Teléfono argentino: 10 números (código de área + número), sin 0 ni 15. */
   function normPhone(v) {
     var d = String(v || "").replace(/\D/g, "");
-    if (d.length === 13 && d.indexOf("549") === 0) d = d.slice(3);
-    else if (d.length === 12 && d.indexOf("54") === 0) d = d.slice(2);
-    if (d.length === 11 && d.charAt(0) === "0") d = d.slice(1);
+    if (d.indexOf("00") === 0) d = d.slice(2);
+    if (d.indexOf("54") === 0 && d.length >= 12) d = d.slice(2);
+    if (d.charAt(0) === "9" && (d.length === 11 || d.length === 13)) d = d.slice(1);
+    if (d.charAt(0) === "0") d = d.slice(1);
+    /* "11 15 2345 6789": se saca el 15 que va después del código de área */
+    if (d.length === 12) {
+      for (var n = 2; n <= 4; n++) {
+        if (d.substr(n, 2) === "15" && (n !== 2 || d.indexOf("11") === 0)) { d = d.slice(0, n) + d.slice(n + 2); break; }
+      }
+    }
     return d;
   }
-  function validPhone(d) { return /^[0-9]{10}$/.test(d); }
-  var PHONE_ERR = "Escribí tu WhatsApp con código de área, sin 0 ni 15: son 10 números. Por ejemplo: 11 2345 6789.";
+  function phoneError(d) {
+    if (!d) return "Escribí tu WhatsApp con código de área. Por ejemplo: 11 2345 6789.";
+    if (/^15/.test(d) || d.length === 8) return "Falta el código de área. Por ejemplo, si sos de Capital o Gran Buenos Aires: 11 2345 6789.";
+    if (!/^[123][0-9]{9}$/.test(d)) return "Ese número no parece completo. Escribilo con código de área. Por ejemplo: 11 2345 6789.";
+    return "";
+  }
+  function prettyPhone(d) {
+    if (!validPhone(d)) return d;
+    /* Solo se agrupa el 11: en el resto no se sabe si el código de área tiene 3 o 4 cifras. */
+    return d.indexOf("11") === 0 ? "11 " + d.slice(2, 6) + " " + d.slice(6) : d;
+  }
+  function validPhone(d) { return /^[123][0-9]{9}$/.test(d); }
   function waAnchor(d, label, text, cls) {
     var a = el("a", cls || "btn btn-primary", label);
     a.href = "https://wa.me/549" + d + (text ? "?text=" + encodeURIComponent(text) : "");
@@ -717,6 +807,7 @@ section.tab{padding-top:40px}
       bio: str(raw.bio, 400),
       tasks: cleanTasks(raw.tasks),
       mode: MODES[raw.mode] ? raw.mode : "",
+      contact: raw.contact === "whatsapp" ? "whatsapp" : "pedido",
       photo: photo,
       updatedAt: toDate(raw.updatedAt)
     };
@@ -732,12 +823,28 @@ section.tab{padding-top:40px}
       id: id, employerId: str(raw.employerId, 128), workerId: str(raw.workerId, 128),
       employerName: str(raw.employerName, 60), employerLocality: str(raw.employerLocality, 60),
       workerName: str(raw.workerName, 60), message: str(raw.message, 300), status: st,
-      createdAt: toDate(raw.createdAt)
+      createdAt: toDate(raw.createdAt), updatedAt: toDate(raw.updatedAt)
     };
   }
   function readContact(s) {
     var d = s.exists() ? snapData(s) : {};
     return typeof d.whatsapp === "string" && validPhone(d.whatsapp) ? d.whatsapp : "";
+  }
+
+  /* Registro de acciones para las estadísticas. Si falla, no interrumpe nada. */
+  var EVENT_LABELS = {
+    profile_created: "Perfiles nuevos", family_created: "Familias nuevas",
+    request_sent: "Pedidos enviados", whatsapp_click: "Contactos por WhatsApp"
+  };
+  function logEvent(type, target, id) {
+    if (!S.db || !S.uid) return;
+    var data = { type: type, actor: S.uid, target: target || "", at: FB.serverTimestamp() };
+    var ref = id ? FB.doc(S.db, "events", id) : FB.doc(FB.collection(S.db, "events"));
+    FB.setDoc(ref, data).catch(function () {});
+  }
+  function cleanEvent(id, raw) {
+    raw = raw || {};
+    return { id: id, type: str(raw.type, 40), actor: str(raw.actor, 128), target: str(raw.target, 128), at: toDate(raw.at) };
   }
 
   /* Botón de dos pasos para acciones que no se pueden deshacer. */
@@ -820,6 +927,7 @@ section.tab{padding-top:40px}
   /* ---------- tarjeta de perfil ---------- */
   function buildCard(p, o) {
     o = o || {};
+    var full = !!o.preview || !!S.expanded[p.id];
     var card = el("article", "card");
     card.id = o.preview ? "" : "card-" + p.id;
     var top = el("div", "card-top");
@@ -836,30 +944,35 @@ section.tab{padding-top:40px}
     var who = el("div", "who");
     who.appendChild(el("h3", "card-name", p.name || "Tu nombre"));
     who.appendChild(el("p", "card-meta", p.locality || "Tu localidad"));
+    var line = [p.years ? YEARS[p.years] : "", p.mode ? MODES[p.mode] : ""].filter(Boolean).join(" · ");
+    who.appendChild(el("p", "card-line", line || "Experiencia y modalidad sin completar"));
     top.appendChild(av);
     top.appendChild(who);
     card.appendChild(top);
 
     if (o.mine) card.appendChild(el("span", "badge", "Tu perfil"));
 
-    var exp = el("p", "kv");
-    exp.appendChild(el("b", null, "Experiencia"));
-    exp.appendChild(document.createTextNode(p.years ? YEARS[p.years] : "Sin completar"));
-    card.appendChild(exp);
+    var shown = full ? p.tasks : p.tasks.slice(0, 2);
+    var tags = tagList(shown.length ? shown : []);
+    if (!full && p.tasks.length > 2) tags.appendChild(el("span", "tag more", "+" + (p.tasks.length - 2)));
+    card.appendChild(tags);
 
-    var look = el("div", "kv");
-    look.appendChild(el("b", null, "Busca trabajo de"));
-    look.appendChild(tagList(p.tasks));
-    card.appendChild(look);
-
-    if (p.mode) {
-      var m = el("p", "kv");
-      m.appendChild(el("b", null, "Modalidad"));
-      m.appendChild(document.createTextNode(MODES[p.mode]));
-      card.appendChild(m);
+    if (full) {
+      if (p.bio) card.appendChild(el("p", "bio", p.bio));
+      if (!o.preview && p.updatedAt) card.appendChild(el("p", "small", "Actualizado el " + fmtDate(p.updatedAt)));
     }
-    if (p.bio) card.appendChild(el("p", "bio", p.bio));
-    if (!o.preview && p.updatedAt) card.appendChild(el("p", "small", "Actualizado el " + fmtDate(p.updatedAt)));
+    if (!o.preview && (p.bio || p.tasks.length > 2 || p.updatedAt)) {
+      var more = el("button", "linkbtn", full ? "Ver menos" : "Ver más");
+      more.type = "button";
+      more.setAttribute("aria-expanded", full ? "true" : "false");
+      more.addEventListener("click", function () {
+        S.expanded[p.id] = !S.expanded[p.id];
+        renderDirectory();
+        var b = document.querySelector("#card-" + CSS.escape(p.id) + " .linkbtn");
+        if (b) b.focus();
+      });
+      card.appendChild(more);
+    }
 
     if (!o.preview && !o.mine) {
       var area = buildReqArea(p);
@@ -880,23 +993,42 @@ section.tab{padding-top:40px}
 
   /* Pedido de entrevista desde una tarjeta. */
   function buildReqArea(p) {
-    if (S.mine) return null; /* quien busca trabajo no manda pedidos */
+    if (S.mine) return null; /* quien busca trabajo no contacta a otras personas */
     var box = el("div", "req");
+    var direct = p.contact === "whatsapp";
     if (!S.employer) {
-      var go1 = el("button", "btn btn-primary", "Pedir una entrevista");
+      var go1 = el("button", "btn btn-primary", direct ? "Escribirle por WhatsApp" : "Pedir una entrevista");
       go1.type = "button";
       go1.addEventListener("click", function () {
         setIntent("employer");
         go("perfil");
-        setMsg($("e-status"), "Antes de pedir una entrevista, contá brevemente sobre tu familia.", "");
+        setMsg($("e-status"), "Antes de contactar a alguien, contá brevemente sobre tu familia.", "");
         setTimeout(function () { $("e-name").focus(); }, 0);
       });
       box.appendChild(go1);
       return box;
     }
+    if (S.blocked) return null;
+    if (direct) {
+      var wa = S.waCache[p.id];
+      if (wa === undefined) loadWorkerContact(p.id);
+      if (wa) {
+        var a = waAnchor(wa, "Escribirle por WhatsApp", "Hola " + p.name + ", soy " + S.employer.name + ". Vi tu perfil en Mi Trayectoria y me gustaría coordinar una entrevista.");
+        a.addEventListener("click", function () {
+          logEvent("whatsapp_click", p.id, "wa_" + S.uid + "_" + p.id);
+          if (!S.waSent.some(function (e) { return e.target === p.id; })) S.waSent.push({ target: p.id, at: new Date() });
+        });
+        box.appendChild(a);
+        if (S.waSent.some(function (e) { return e.target === p.id; })) box.appendChild(el("p", "small", "Ya le escribiste por WhatsApp."));
+      } else if (wa === "") {
+        box.appendChild(el("p", "small", "Por ahora no tiene WhatsApp cargado."));
+      } else {
+        box.appendChild(el("p", "small", "Cargando su WhatsApp…"));
+      }
+      return box;
+    }
     var r = S.sent[p.id];
     if (!r) {
-      if (S.blocked) return null;
       if (S.openReq === p.id) {
         var lab = el("label", null, "Contale brevemente qué necesitás (opcional)");
         lab.htmlFor = "rq-" + p.id;
@@ -962,7 +1094,7 @@ section.tab{padding-top:40px}
       employerName: S.employer.name, employerLocality: S.employer.locality,
       workerName: p.name, message: msg, status: "pending",
       createdAt: FB.serverTimestamp(), updatedAt: FB.serverTimestamp()
-    });
+    }).then(function () { logEvent("request_sent", p.id); });
   }
 
   /* Un WhatsApp recién habilitado puede tardar un instante: si Firebase lo niega, se reintenta. */
@@ -979,7 +1111,7 @@ section.tab{padding-top:40px}
     FB.getDoc(FB.doc(S.db, "profiles", wid, "private", "contact")).then(function (s) {
       if (S.uid !== uid) return;
       S.waCache[wid] = readContact(s);
-      renderInbox(); renderAdmin();
+      renderInbox(); renderAdmin(); renderDirectory();
     }, function () { if (S.uid === uid) { delete S.waCache[wid]; retryLater("w" + wid); } });
   }
   function loadFamily(eid) {
@@ -998,7 +1130,8 @@ section.tab{padding-top:40px}
     var uid = S.uid;
     FB.getDoc(FB.doc(S.db, "employers", eid, "private", "contact")).then(function (s) {
       if (S.uid !== uid) return;
-      S.famWaCache[eid] = readContact(s);
+      var v = readContact(s);
+      if (v || !S.famWaCache[eid]) S.famWaCache[eid] = v; /* una lectura vieja no pisa un dato recién guardado */
       renderInbox(); renderAdmin(); renderFamView();
     }, function () { if (S.uid === uid) { delete S.famWaCache[eid]; retryLater("f" + eid); } });
   }
@@ -1007,13 +1140,13 @@ section.tab{padding-top:40px}
     var b = FB.writeBatch(S.db);
     b.delete(FB.doc(S.db, "profiles", wid, "private", "contact"));
     b.delete(FB.doc(S.db, "profiles", wid));
-    return b.commit();
+    return b.commit().then(function () { logEvent("profile_deleted", wid); });
   }
   function deleteFamily(eid) {
     var b = FB.writeBatch(S.db);
     b.delete(FB.doc(S.db, "employers", eid, "private", "contact"));
     b.delete(FB.doc(S.db, "employers", eid));
-    return b.commit();
+    return b.commit().then(function () { logEvent("family_deleted", eid); });
   }
 
   function blockButton(uid) {
@@ -1040,6 +1173,7 @@ section.tab{padding-top:40px}
       bio: $("f-bio").value.trim(),
       tasks: readChips($("f-tasks")),
       mode: $("f-mode").value,
+      contact: (document.querySelector('input[name="f-contact"]:checked') || {}).value || "",
       photo: S.photo,
       whatsapp: normPhone($("f-wa").value),
       consent: $("f-consent").checked
@@ -1052,6 +1186,8 @@ section.tab{padding-top:40px}
     $("f-years").value = p.years;
     $("f-bio").value = p.bio;
     $("f-mode").value = p.mode;
+    var rc = document.querySelector('input[name="f-contact"][value="' + p.contact + '"]');
+    if (rc) rc.checked = true;
     setChips($("f-tasks"), p.tasks);
     S.photo = p.photo;
     $("f-consent").checked = true;
@@ -1070,7 +1206,7 @@ section.tab{padding-top:40px}
     var f = readForm();
     var box = $("preview");
     box.textContent = "";
-    box.appendChild(buildCard({ name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo }, { preview: true }));
+    box.appendChild(buildCard({ id: "preview", name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo }, { preview: true }));
     var th = $("photo-thumb");
     th.textContent = "";
     var big;
@@ -1094,9 +1230,14 @@ section.tab{padding-top:40px}
       if (!f.locality) return [1, "Escribí la localidad donde vivís."];
       if (!f.years) return [1, "Elegí tus años de experiencia."];
     }
-    if (upTo >= 3 && !f.tasks.length) return [3, "Elegí al menos un tipo de trabajo que buscás."];
+    if (upTo >= 3) {
+      if (!f.tasks.length) return [3, "Elegí al menos un tipo de trabajo que buscás."];
+      if (!f.mode) return [3, "Elegí la modalidad que buscás: con retiro, sin retiro o por horas."];
+    }
     if (upTo >= 4) {
-      if (!validPhone(f.whatsapp)) return [4, PHONE_ERR];
+      if (!f.contact) return [4, "Elegí cómo querés que te contacten las familias."];
+      var pe = phoneError(f.whatsapp);
+      if (pe) return [4, pe];
       if (!f.consent) return [4, "Marcá que aceptás que las personas registradas vean tu perfil."];
     }
     return null;
@@ -1163,7 +1304,7 @@ section.tab{padding-top:40px}
     S.busy = true;
     renderWizard();
     setStatus("Guardando…");
-    var data = { name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, photo: f.photo, updatedAt: FB.serverTimestamp() };
+    var data = { name: f.name, locality: f.locality, years: f.years, bio: f.bio, tasks: f.tasks, mode: f.mode, contact: f.contact, photo: f.photo, updatedAt: FB.serverTimestamp() };
     withRetry(function () {
       var b = FB.writeBatch(S.db);
       b.set(FB.doc(S.db, "profiles", S.uid), data);
@@ -1171,8 +1312,11 @@ section.tab{padding-top:40px}
       return b.commit();
     }).then(function () {
       S.dirty = false; S.filled = true; S.editing = false; S.step = 1; S.showPreview = false;
+      if (wasNew) logEvent("profile_created", S.uid);
       setStatus("");
-      setMsg($("w-view-status"), wasNew ? "¡Listo! Tu perfil está publicado. Cuando una familia te pida una entrevista, vas a ver un número en \"Pedidos\"." : "Listo: guardamos los cambios.", "ok");
+      setMsg($("w-view-status"), !wasNew ? "Listo: guardamos los cambios." : f.contact === "whatsapp"
+        ? "¡Listo! Tu perfil está publicado. Las familias te van a escribir directo a tu WhatsApp."
+        : "¡Listo! Tu perfil está publicado. Cuando una familia te pida una entrevista, vas a ver un número en \"Pedidos\".", "ok");
       render();
       window.scrollTo(0, 0);
     }, function (e) {
@@ -1211,7 +1355,11 @@ section.tab{padding-top:40px}
   function renderWorkerView() {
     var box = $("w-card");
     box.textContent = "";
-    if (S.mine) box.appendChild(buildCard(S.mine, { mine: true, preview: true }));
+    if (!S.mine) return;
+    box.appendChild(buildCard(S.mine, { mine: true, preview: true }));
+    $("w-view-sub").textContent = S.mine.contact === "whatsapp"
+      ? "Así ven tu ficha las familias. Elegiste que te escriban directo por WhatsApp: las familias registradas pueden ver tu número."
+      : "Así ven tu ficha las familias. Elegiste recibir pedidos: tu WhatsApp solo lo ve la familia cuyo pedido aceptes.";
   }
 
   /* ---------- pedidos ---------- */
@@ -1225,7 +1373,8 @@ section.tab{padding-top:40px}
   }
 
   function answer(r, status) {
-    return FB.updateDoc(FB.doc(S.db, "requests", r.id), { status: status, updatedAt: FB.serverTimestamp() });
+    return FB.updateDoc(FB.doc(S.db, "requests", r.id), { status: status, updatedAt: FB.serverTimestamp() })
+      .then(function () { logEvent(status === "accepted" ? "request_accepted" : "request_rejected", r.employerId); });
   }
 
   function renderInbox() {
@@ -1240,10 +1389,12 @@ section.tab{padding-top:40px}
   }
 
   function renderReceived(box) {
-    $("pedidos-sub").textContent = "Cuando una familia quiera entrevistarte, aparece acá. Si aceptás, le pasamos tu WhatsApp y vos ves el suyo.";
+    $("pedidos-sub").textContent = S.mine.contact === "whatsapp"
+      ? "Elegiste que las familias te escriban directo por WhatsApp, así que los mensajes te llegan ahí. Si cambiás a recibir pedidos (en \"Tu perfil\" → Editar), van a aparecer acá."
+      : "Cuando una familia quiera entrevistarte, aparece acá. Si aceptás, le pasamos tu WhatsApp y vos ves el suyo.";
     var items = S.inbox.slice().sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
     if (!items.length) {
-      box.appendChild(el("p", "empty-note", "Todavía no tenés pedidos. Cuando una familia quiera entrevistarte, lo vas a ver acá. Entrá cada tanto a revisar."));
+      if (S.mine.contact !== "whatsapp") box.appendChild(el("p", "empty-note", "Todavía no tenés pedidos. Cuando una familia quiera entrevistarte, lo vas a ver acá. Entrá cada tanto a revisar."));
       return;
     }
     items.forEach(function (r) {
@@ -1303,7 +1454,12 @@ section.tab{padding-top:40px}
 
   function renderSent(box) {
     $("pedidos-sub").textContent = "Los pedidos que mandaste y en qué están. Cuando una persona acepta, acá ves su WhatsApp.";
+    renderWaSent();
     var items = sentList();
+    if (!items.length && S.waSent.length) {
+      box.appendChild(el("p", "empty-note", "No mandaste pedidos de entrevista."));
+      return;
+    }
     if (!items.length) {
       box.appendChild(el("p", "empty-note", "Todavía no mandaste pedidos. Buscá en \"Perfiles\" y tocá \"Pedir una entrevista\" en la ficha que te interese."));
       var b = el("button", "btn btn-primary", "Ver perfiles");
@@ -1331,7 +1487,9 @@ section.tab{padding-top:40px}
         info.appendChild(el("p", "small", "Se entera cuando entra a la página. Puede tardar unos días."));
         var c = el("button", "btn", "Cancelar pedido");
         c.type = "button";
-        twoStep(c, "Cancelar pedido", "Confirmar: cancelar", function () { return FB.deleteDoc(FB.doc(S.db, "requests", r.id)); });
+        twoStep(c, "Cancelar pedido", "Confirmar: cancelar", function () {
+          return FB.deleteDoc(FB.doc(S.db, "requests", r.id)).then(function () { logEvent("request_canceled", r.workerId); });
+        });
         acts.appendChild(c);
       } else if (r.status === "accepted") {
         var wa = S.waCache[r.workerId];
@@ -1346,6 +1504,30 @@ section.tab{padding-top:40px}
         }
       } else {
         info.appendChild(el("p", "small", "Por ahora no puede tomar la entrevista."));
+      }
+      row.appendChild(info);
+      row.appendChild(acts);
+      box.appendChild(row);
+    });
+  }
+
+  function renderWaSent() {
+    var wrap = $("wa-sent-box"), box = $("wa-sent");
+    box.textContent = "";
+    var items = S.waSent.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+    wrap.hidden = !items.length;
+    items.forEach(function (e) {
+      var p = null;
+      for (var i = 0; i < S.profiles.length; i++) if (S.profiles[i].id === e.target) p = S.profiles[i];
+      var row = el("div", "row");
+      var info = el("div", "info");
+      info.appendChild(el("b", "row-title", p ? p.name + " · " + p.locality : "Perfil que ya no está publicado"));
+      if (e.at) info.appendChild(el("p", "small", "Le escribiste el " + fmtDate(e.at)));
+      var acts = el("div", "actions");
+      if (p && p.contact === "whatsapp") {
+        var wa = S.waCache[p.id];
+        if (wa === undefined) loadWorkerContact(p.id);
+        if (wa) acts.appendChild(waAnchor(wa, "Volver a escribirle", "", "btn"));
       }
       row.appendChild(info);
       row.appendChild(acts);
@@ -1377,7 +1559,7 @@ section.tab{padding-top:40px}
     if (f.about) box.appendChild(el("p", "bio", f.about));
     var wa = S.famWaCache[S.uid];
     if (wa === undefined) loadFamilyContact(S.uid);
-    box.appendChild(el("p", "small", "Tu WhatsApp (privado): " + (wa || "—")));
+    box.appendChild(el("p", "small", "Tu WhatsApp (privado): " + (wa ? prettyPhone(wa) : "—")));
   }
 
   function saveFam(ev) {
@@ -1389,7 +1571,8 @@ section.tab{padding-top:40px}
     if (name.length < 2) { setMsg(st, "Escribí tu nombre.", "err"); return; }
     if (!loc) { setMsg(st, "Escribí la localidad donde necesitás la ayuda.", "err"); return; }
     if (!tasks.length) { setMsg(st, "Elegí al menos un tipo de ayuda.", "err"); return; }
-    if (!validPhone(wa)) { setMsg(st, PHONE_ERR, "err"); return; }
+    var pe = phoneError(wa);
+    if (pe) { setMsg(st, pe, "err"); return; }
     if (!$("e-consent").checked) { setMsg(st, "Marcá que aceptás las condiciones.", "err"); return; }
     var wasNew = !S.employer;
     $("e-save").disabled = true;
@@ -1402,6 +1585,7 @@ section.tab{padding-top:40px}
     }).then(function () {
       S.famDirty = false; S.famFilled = true; S.famEditing = false;
       S.famWaCache[S.uid] = wa;
+      if (wasNew) logEvent("family_created", S.uid);
       setMsg(st, "");
       setMsg($("f-view-status"), wasNew ? "¡Listo! Ya podés pedir entrevistas. Tocá \"Ver perfiles\"." : "Listo: guardamos los cambios.", "ok");
       render();
@@ -1411,9 +1595,130 @@ section.tab{padding-top:40px}
     }).then(function () { $("e-save").disabled = false; });
   }
 
+  /* ---------- estadísticas ---------- */
+  function tile(num, label) {
+    var t = el("div", "tile");
+    t.appendChild(el("span", "num", String(num)));
+    t.appendChild(el("span", "lbl", label));
+    return t;
+  }
+  function table(caption, heads, rows) {
+    var wrap = el("div", "table-wrap");
+    var t = el("table", "table");
+    t.appendChild(el("caption", null, caption));
+    var thead = el("thead"), tr = el("tr");
+    heads.forEach(function (h, i) { var th = el("th", i ? "n" : null, h); th.scope = "col"; tr.appendChild(th); });
+    thead.appendChild(tr); t.appendChild(thead);
+    var tb = el("tbody");
+    rows.forEach(function (r) {
+      var row = el("tr");
+      r.forEach(function (c, i) { row.appendChild(el(i ? "td" : "th", i ? "n" : null, String(c))); if (!i) row.lastChild.scope = "row"; });
+      tb.appendChild(row);
+    });
+    t.appendChild(tb);
+    wrap.appendChild(t);
+    return wrap;
+  }
+  function fmtDuration(ms) {
+    var h = ms / 36e5;
+    if (h < 1) return "menos de 1 h";
+    if (h < 48) return Math.round(h) + " h";
+    return Math.round(h / 24) + " días";
+  }
+
+  function renderStats() {
+    var box = $("adm-stats");
+    box.textContent = "";
+    var reqs = S.allReqs;
+    var acc = reqs.filter(function (r) { return r.status === "accepted"; }).length;
+    var rej = reqs.filter(function (r) { return r.status === "rejected"; }).length;
+    var pend = reqs.length - acc - rej;
+    var answered = reqs.filter(function (r) { return r.status !== "pending" && r.createdAt && r.updatedAt; });
+    var avg = answered.length ? answered.reduce(function (s, r) { return s + (r.updatedAt - r.createdAt); }, 0) / answered.length : null;
+    var waCount = S.events.filter(function (e) { return e.type === "whatsapp_click"; }).length;
+
+    var tiles = el("div", "tiles");
+    tiles.appendChild(tile(S.profiles.length, "Perfiles publicados"));
+    tiles.appendChild(tile(S.allEmployers.length, "Familias registradas"));
+    tiles.appendChild(tile(waCount, "Contactos por WhatsApp"));
+    tiles.appendChild(tile(reqs.length, "Pedidos de entrevista"));
+    tiles.appendChild(tile(acc + rej ? Math.round(acc * 100 / (acc + rej)) + " %" : "—", "Pedidos aceptados (de los respondidos)"));
+    tiles.appendChild(tile(avg == null ? "—" : fmtDuration(avg), "Tiempo promedio de respuesta"));
+    box.appendChild(tiles);
+    box.appendChild(table("Pedidos de entrevista", ["Estado", "Cantidad"], [["Aceptados", acc], ["No aceptados", rej], ["Sin respuesta", pend]]));
+
+    /* Por semana (desde que hay registro de acciones) */
+    var now = Date.now(), week = 7 * 864e5, labels = ["Últimos 7 días", "Semana anterior", "Hace 2 semanas", "Hace 3 semanas"];
+    var types = ["profile_created", "family_created", "request_sent", "whatsapp_click"];
+    var rows = labels.map(function (lab, i) {
+      var from = now - (i + 1) * week, to = now - i * week;
+      return [lab].concat(types.map(function (t) {
+        return S.events.filter(function (e) { return e.type === t && e.at && e.at >= from && e.at < to; }).length;
+      }));
+    });
+    box.appendChild(table("Actividad por semana", ["Semana"].concat(types.map(function (t) { return EVENT_LABELS[t]; })), rows));
+    var first = S.events.reduce(function (m, e) { return e.at && (!m || e.at < m) ? e.at : m; }, null);
+    box.appendChild(el("p", "small stats-note", first ? "La actividad por semana se cuenta desde el " + fmtDate(first) + ", cuando empezó el registro." : "Todavía no hay acciones registradas. La actividad por semana se va a ir llenando a medida que la gente use la página."));
+
+    /* Oferta y demanda por localidad */
+    var loc = {};
+    function add(name, key) {
+      var k = norm(name || ""); if (!k) return;
+      if (!loc[k]) loc[k] = { label: name.trim(), p: 0, f: 0 };
+      loc[k][key]++;
+    }
+    S.profiles.forEach(function (p) { add(p.locality, "p"); });
+    S.allEmployers.forEach(function (f) { add(f.locality, "f"); });
+    var locRows = Object.keys(loc).map(function (k) { return loc[k]; })
+      .sort(function (a, b) { return (b.p + b.f) - (a.p + a.f) || a.label.localeCompare(b.label, "es"); })
+      .slice(0, 15).map(function (x) { return [x.label, x.p, x.f]; });
+    if (locRows.length) box.appendChild(table("Por localidad (las 15 con más movimiento)", ["Localidad", "Perfiles", "Familias"], locRows));
+
+    var taskRows = TASKS.map(function (t) {
+      return [t,
+        S.profiles.filter(function (p) { return p.tasks.indexOf(t) > -1; }).length,
+        S.allEmployers.filter(function (f) { return f.tasks.indexOf(t) > -1; }).length];
+    });
+    box.appendChild(table("Por tipo de trabajo", ["Tipo de trabajo", "Lo ofrecen", "Lo buscan"], taskRows));
+
+    var modeRows = Object.keys(MODES).map(function (m) {
+      return [MODES[m], S.profiles.filter(function (p) { return p.mode === m; }).length];
+    });
+    modeRows.push(["Sin completar", S.profiles.filter(function (p) { return !p.mode; }).length]);
+    var contactRows = [
+      ["WhatsApp directo", S.profiles.filter(function (p) { return p.contact === "whatsapp"; }).length],
+      ["Pedido de entrevista", S.profiles.filter(function (p) { return p.contact !== "whatsapp"; }).length]
+    ];
+    box.appendChild(table("Perfiles por modalidad", ["Modalidad", "Perfiles"], modeRows));
+    box.appendChild(table("Cómo eligen que las contacten", ["Forma de contacto", "Perfiles"], contactRows));
+  }
+
+  function renderBlocked() {
+    var box = $("adm-blocked");
+    box.textContent = "";
+    var ids = Object.keys(S.blockedIds);
+    if (!ids.length) { box.appendChild(el("p", "empty-note", "No hay cuentas bloqueadas.")); return; }
+    ids.forEach(function (id) {
+      var p = null, f = null, i;
+      for (i = 0; i < S.profiles.length; i++) if (S.profiles[i].id === id) p = S.profiles[i];
+      for (i = 0; i < S.allEmployers.length; i++) if (S.allEmployers[i].id === id) f = S.allEmployers[i];
+      var row = el("div", "row");
+      var info = el("div", "info");
+      info.appendChild(el("b", "row-title", p ? p.name + " · " + p.locality : f ? f.name + " · " + f.locality : "Cuenta sin perfil publicado"));
+      info.appendChild(el("p", "small", p ? "Busca trabajo" : f ? "Familia" : "Identificador: " + id));
+      var acts = el("div", "actions");
+      acts.appendChild(blockButton(id));
+      row.appendChild(info);
+      row.appendChild(acts);
+      box.appendChild(row);
+    });
+  }
+
   /* ---------- administración ---------- */
   function renderAdmin() {
     if (!S.isAdmin) return;
+    renderStats();
+    renderBlocked();
     var rl = $("adm-requests");
     rl.textContent = "";
     var pend = S.allReqs.filter(function (r) { return r.status === "pending"; }).sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
@@ -1483,11 +1788,12 @@ section.tab{padding-top:40px}
     if (!S.verified) return;
     $("perfiles-sub").textContent = S.mine
       ? "Las personas que buscan trabajo en esta página. Mirar otras fichas te puede dar ideas para la tuya."
-      : "Personas que buscan trabajo en casas de familia. Filtrá por localidad o por tipo de trabajo, y tocá \"Pedir una entrevista\" en la ficha que te interese.";
-    var loc = $("flt-loc").value, task = $("flt-task").value;
+      : "Personas que buscan trabajo en casas de familia. Filtrá por localidad, tipo de trabajo o modalidad. En cada ficha vas a ver \"Escribirle por WhatsApp\" o \"Pedir una entrevista\", según lo que eligió esa persona.";
+    var loc = $("flt-loc").value, task = $("flt-task").value, mode = $("flt-mode").value;
     var items = S.profiles.filter(function (p) {
       if (loc && norm(p.locality) !== loc) return false;
       if (task && p.tasks.indexOf(task) < 0) return false;
+      if (mode && p.mode !== mode) return false;
       return p.name && p.locality;
     });
     var grid = $("grid"), empty = $("empty");
@@ -1511,12 +1817,13 @@ section.tab{padding-top:40px}
     unsubs.push(FB.onSnapshot(q, ok, function () { S.listening[key] = false; }));
   }
   function ensureDirectory() {
-    listen("profiles", FB.query(FB.collection(S.db, "profiles"), FB.orderBy("updatedAt", "desc"), FB.limit(200)), function (snap) {
+    listen("profiles", FB.query(FB.collection(S.db, "profiles"), FB.orderBy("updatedAt", "desc"), FB.limit(500)), function (snap) {
       S.profilesLoaded = true;
       S.profiles = snap.docs.map(function (d) { return clean(d.id, snapData(d)); });
       renderFilters();
       renderDirectory();
       renderInbox();
+      renderAdmin();
     });
   }
   function ensureSent() {
@@ -1526,6 +1833,11 @@ section.tab{padding-top:40px}
       S.sent = m;
       renderDirectory();
       render();
+    });
+    listen("waSent", FB.query(FB.collection(S.db, "events"), FB.where("actor", "==", S.uid), FB.where("type", "==", "whatsapp_click")), function (snap) {
+      S.waSent = snap.docs.map(function (d) { return cleanEvent(d.id, snapData(d)); });
+      renderDirectory();
+      if (S.tab === "pedidos") renderInbox();
     });
   }
   function ensureInbox() {
@@ -1544,6 +1856,10 @@ section.tab{padding-top:40px}
       S.allReqs = snap.docs.map(function (d) { return cleanReq(d.id, snapData(d)); });
       renderAdmin();
     });
+    listen("events", FB.query(FB.collection(S.db, "events"), FB.orderBy("at", "desc"), FB.limit(5000)), function (snap) {
+      S.events = snap.docs.map(function (d) { return cleanEvent(d.id, snapData(d)); });
+      renderAdmin();
+    });
     listen("blocked", FB.collection(S.db, "blocked"), function (snap) {
       var m = {};
       snap.docs.forEach(function (d) { m[d.id] = true; });
@@ -1559,7 +1875,7 @@ section.tab{padding-top:40px}
       var wa = readContact(s);
       var input = kind === "profiles" ? $("f-wa") : $("e-wa");
       var dirty = kind === "profiles" ? S.dirty : S.famDirty;
-      if (!dirty && !input.value) input.value = wa;
+      if (!dirty && !input.value) input.value = prettyPhone(wa);
       if (kind === "employers") { S.famWaCache[uid] = wa; renderFamView(); }
     }, function () {});
   }
@@ -1582,7 +1898,7 @@ section.tab{padding-top:40px}
   }
 
   function loginGoogle() {
-    var st = $("l-status");
+    var st = $("g-status");
     setMsg(st, "");
     var provider = new FB.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
@@ -1855,6 +2171,20 @@ section.tab{padding-top:40px}
     });
     $("flt-loc").addEventListener("change", renderDirectory);
     $("flt-task").addEventListener("change", renderDirectory);
+    $("flt-mode").addEventListener("change", renderDirectory);
+    $("show-email").addEventListener("click", function () {
+      S.showEmail = !S.showEmail;
+      $("email-box").hidden = !S.showEmail;
+      this.setAttribute("aria-expanded", S.showEmail ? "true" : "false");
+      this.textContent = S.showEmail ? "Ocultar el ingreso con correo" : "No tengo Google: usar mi correo";
+      if (S.showEmail) $("l-email").focus();
+    });
+    ["f-wa", "e-wa"].forEach(function (id) {
+      $(id).addEventListener("blur", function () {
+        var d = normPhone(this.value);
+        if (validPhone(d)) this.value = prettyPhone(d);
+      });
+    });
     $("login-google").addEventListener("click", loginGoogle);
     $("login-form").addEventListener("submit", loginEmail);
     $("l-create").addEventListener("click", createAccount);
